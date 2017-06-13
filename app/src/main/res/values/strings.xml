@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">Furniture Go</string>
+    <string name="main_title_urlLauncher">Launch World via url</string>
+    <string name="compass_accuracy_low">Please re-calibrate compass by waving your device in a figure 8 motion.</string>
+    <string name="location_fetching">Trying to find out where you are</string>
+    <string name="device_unsupported">This device is not supported</string>
+    <string name="videosrawables_fallback">VideoDrawables are rendered fullscreen on this device</string>
+    <string name="urllauncher_menu_clear_history">Clear history</string>
+    <string name="urllauncher_button_launch"> Launch </string>
+    <string name="poi_detail_title">Place Details</string>
+    <string name="urllauncher_hint_textfield">http://</string>
+    <string name="urllauncher_default_value_textfield">http://</string>
+    <string name="poi_name">Name</string>
+    <string name="poi_description">Description</string>
+    <string name="poi_id">ID</string>
+    <string name="title_activity_sample1_poi_detail">Sample 5.1 POI Detail</string>
+    <string name="footer">Sample App</string>
 </resources>
