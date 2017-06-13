@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.hardware.SensorManager;
-import android.location.LocationListener;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
@@ -14,6 +13,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.wikitude.architect.ArchitectJavaScriptInterfaceListener;
+import com.wikitude.architect.ArchitectStartupConfiguration;
 import com.wikitude.architect.ArchitectView;
 import com.wikitude.architect.ArchitectView.CaptureScreenCallback;
 import com.wikitude.architect.ArchitectView.SensorAccuracyChangeListener;
@@ -39,13 +39,12 @@ public class SampleCamActivity extends AbstractArchitectCamActivity {
 
 	@Override
 	public String getARchitectWorldPath() {
-		return getIntent().getExtras().getString(
-				MainSamplesListActivity.EXTRAS_KEY_ACTIVITY_ARCHITECT_WORLD_URL);
+		return "index.html";
 	}
 
 	@Override
 	public String getActivityTitle() {
-		return "Test-World";
+		return "Test-Title";
 	}
 
 	@Override
@@ -140,11 +139,6 @@ public class SampleCamActivity extends AbstractArchitectCamActivity {
             }
         }
     }
-
-	@Override
-	public ILocationProvider getLocationProvider(final LocationListener locationListener) {
-		return new LocationProvider(this, locationListener);
-	}
 	
 	@Override
 	public float getInitialCullingDistanceMeters() {
@@ -153,21 +147,8 @@ public class SampleCamActivity extends AbstractArchitectCamActivity {
 	}
 
 	@Override
-	protected boolean hasGeo() {
-		return getIntent().getExtras().getBoolean(
-				MainSamplesListActivity.EXTRAS_KEY_ACTIVITY_GEO);
-	}
-
-	@Override
-	protected boolean hasIR() {
-		return getIntent().getExtras().getBoolean(
-				MainSamplesListActivity.EXTRAS_KEY_ACTIVITY_IR);
-	}
-
-	@Override
 	protected boolean hasInstant() {
-		return getIntent().getExtras().getBoolean(
-				MainSamplesListActivity.EXTRAS_KEY_ACTIVITY_INSTANT);
+		return (ArchitectView.getSupportedFeaturesForDevice(getApplicationContext()) & ArchitectStartupConfiguration.Features.InstantTracking) != 0;
 	}
 
 	@Override
