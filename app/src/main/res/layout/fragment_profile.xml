@@ -1,0 +1,208 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="fcih.furniturego.ProfileFragment">
+
+    <android.support.v7.widget.ActionBarContainer
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#000000">
+
+        <ImageView
+            android:id="@+id/img"
+            android:layout_width="match_parent"
+            android:layout_height="260dp"
+            android:alpha="0.8"
+            android:scaleType="fitXY"
+            android:src="@drawable/nav_bg" />
+
+        <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/backimg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                app:srcCompat="@drawable/ic_arrow_back"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="bottom"
+                android:text="Personal Info"
+                android:textColor="#fff"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/savetext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginRight="20dp"
+                android:text="Save"
+                android:textColor="#fff"
+                android:textSize="14sp" />
+        </android.support.v7.widget.Toolbar>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.makeramen.roundedimageview.RoundedImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/userimage"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="70dp"
+                android:paddingTop="@dimen/nav_header_vertical_spacing"
+                android:scaleType="fitStart"
+                android:src="@drawable/com_facebook_profile_picture_blank_square"
+                app:riv_border_color="#333333"
+                app:riv_border_width="1dip"
+                app:riv_corner_radius="35dip"
+                app:riv_mutate_background="true"
+                app:riv_oval="true"
+                app:riv_tile_mode="clamp" />
+        </LinearLayout>
+    </android.support.v7.widget.ActionBarContainer>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:padding="15dp"
+            android:text="Name"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/nameedit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#00000000"
+            android:hint="Enter Your Name"
+            android:inputType="textPhonetic"
+            android:padding="16dp"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="#ACACAC" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:inputType="none"
+            android:padding="15dp"
+            android:text="Email"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/emailedit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:editable="false"
+            android:hint="Enter Your Email"
+            android:inputType="none|textEmailAddress"
+            android:padding="16dp"
+            android:textSize="14sp" />
+
+        <ImageButton
+            android:id="@+id/editemail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_edit_dp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="#ACACAC" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:padding="15dp"
+            android:text="Password"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/passwordedit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:editable="false"
+            android:hint="**********"
+            android:inputType="none|textPassword"
+            android:padding="15dp"
+            android:textSize="14sp" />
+
+        <ImageButton
+            android:id="@+id/editpassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="edit"
+            app:srcCompat="@drawable/ic_edit_dp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="#ACACAC" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:padding="15dp"
+            android:text="Picture"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/Browsebutton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Browse" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="#ACACAC" />
+
+</LinearLayout>

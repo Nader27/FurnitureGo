@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:clickable="true"
+    android:foreground="?selectableItemBackground"
+    card_view:cardBackgroundColor="#d8dad8"
+    card_view:cardCornerRadius="12dp"
+    card_view:cardElevation="3dp"
+    card_view:contentPadding="4dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/item_image"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/ic_3d_image" />
+
+        <TextView
+            android:id="@+id/item_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/item_image"
+            android:paddingTop="5dp"
+            android:text="Name"
+            android:textSize="25sp" />
+
+        <TextView
+            android:id="@+id/item_company"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/item_title"
+            android:layout_toRightOf="@+id/item_image"
+            android:text="Company" />
+
+        <TextView
+            android:id="@+id/item_rate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/item_company"
+            android:layout_toRightOf="@+id/item_image"
+            android:text="4.0★" />
+
+        <ImageButton
+            android:id="@+id/item_menu"
+            android:layout_width="20dp"
+            android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@null"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            card_view:srcCompat="@drawable/ic_dots" />
+
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>
