@@ -176,7 +176,6 @@ public abstract class AbstractArchitectCamActivity extends Activity implements A
 		return null;
 	}
 
-	//TODO: Check CameraResolution
 	protected CameraSettings.CameraResolution getCameraResolution(){
 		return CameraSettings.CameraResolution.SD_640x480;
 	}
