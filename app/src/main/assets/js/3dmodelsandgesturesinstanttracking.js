@@ -18,7 +18,7 @@ AR.context.on2FingerGestureStarted = function() {
 }
 
 var World = {
-    modelPaths: ["assets/models/clock.wt3", "assets/models/couch.wt3", "assets/models/officechair.wt3", "assets/models/table.wt3", "assets/models/trainer.wt3" ],
+    modelPaths: ["assets/models/clock.wt3", "assets/models/couch.wt3", "assets/models/officechair.wt3", "assets/models/table.wt3", "assets/models/trainer.wt3"],
     /*
         requestedModel is the index of the next model to be created. This is necessary because we have to wait one frame in order to pass the correct initial position to the newly created model.
         initialDrag is a boolean that serves the purpose of swiping the model into the scene. In the moment that the model is created, the drag event has already started and will not be caught by the model, so the motion has to be carried out by the tracking plane.
@@ -78,16 +78,16 @@ var World = {
                 alert(errorMessage);
             }
         });
-
+            for(var i=0;i<allModelImgSources.length;i++){
+                   $("#inputs").append("<input data-id="+i+"  class='tracking-model-button-inactive' type='image' src="+allModelImgSources[i]+" />");
+            }
         World.setupEventListeners()
     },
 
     setupEventListeners: function setupEventListenersFn() {
-
             $('.tracking-model-button-inactive').on('click',function(){
                 World.requestedModel = $(this).data("id");
-                alert($(this).data("id"));
-            });
+             });
         /*
         document.getElementById("tracking-model-button-0").addEventListener('touchstart', function(ev){
             World.requestedModel = 0;
@@ -124,26 +124,19 @@ var World = {
             // el moshkela :
             // 1- lama betdoos start w el items btezhar , lama betdoos stop w b3deen start tany btezhar el items tany fa lazem ne3ml reset lel div deh
             // 2- el listiner ta2reban feh moshkela bta3 el items la2eno mesh byezher el alert
-            for(var i=0;i<allModelImgSources.length;i++){
-               $("#inputs").append("<input data-id="+i+" class='tracking-model-button-inactive' type='image' src="+allModelImgSources[i]+" />");
-            }
-
-
-
         if (this.tracker.state === AR.InstantTrackerState.INITIALIZING) {
-            
+
             var els = [].slice.apply(document.getElementsByClassName("tracking-model-button-inactive"));
             for (var i = 0; i < els.length; i++) {
                 console.log(els[i]);
                 els[i].className = els[i].className = "tracking-model-button";
             }
-            
+
             document.getElementById("tracking-start-stop-button").src = "assets/buttons/stop.png";
             document.getElementById("tracking-height-slider-container").style.visibility = "hidden";
-
             this.tracker.state = AR.InstantTrackerState.TRACKING;
         } else {
-            
+
             var els = [].slice.apply(document.getElementsByClassName("tracking-model-button"));
             for (var i = 0; i < els.length; i++) {
                 console.log(els[i]);
