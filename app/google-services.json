@@ -1,0 +1,163 @@
+{
+  "project_info": {
+    "project_number": "150285431568",
+    "firebase_url": "https://furniture-go.firebaseio.com",
+    "project_id": "furniture-go",
+    "storage_bucket": "furniture-go.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:150285431568:android:6a52f1af1b1aa742",
+        "android_client_info": {
+          "package_name": "fcih.gp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "150285431568-grqkt0amhvvak1c0ighgs3ptp3smuju6.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "150285431568-f96vv28fmipligi1u7p8tn3nglchvdeq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "fcih.gp",
+            "certificate_hash": "b4fed63bc7898174a0047a9a133c397abbb6b68e"
+          }
+        },
+        {
+          "client_id": "150285431568-2q9lr94k0hivblco76qt4ihgajevs8p1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7pjFLpGViyJUoinmagjXBKXz1mgKZ_KU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "150285431568-grqkt0amhvvak1c0ighgs3ptp3smuju6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:150285431568:android:cad9b96d2ebb1f61",
+        "android_client_info": {
+          "package_name": "fcih.furniturego"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "150285431568-lel7b3cd98gj3cr1451g5dvipcpjrhvp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "fcih.furniturego",
+            "certificate_hash": "29bbd44a4b3f362dc8f6190136b89b477cf597c6"
+          }
+        },
+        {
+          "client_id": "150285431568-o4cqlv2feojg477o3s4ftqmup7kvqu66.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "fcih.furniturego",
+            "certificate_hash": "b4fed63bc7898174a0047a9a133c397abbb6b68e"
+          }
+        },
+        {
+          "client_id": "150285431568-grqkt0amhvvak1c0ighgs3ptp3smuju6.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "150285431568-2q9lr94k0hivblco76qt4ihgajevs8p1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7pjFLpGViyJUoinmagjXBKXz1mgKZ_KU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "150285431568-grqkt0amhvvak1c0ighgs3ptp3smuju6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:150285431568:android:7ebeb916274bb277",
+        "android_client_info": {
+          "package_name": "com.fcih.gp.furniturego"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "150285431568-30koosj69d3rh889ovejc5prn5gqg1ur.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fcih.gp.furniturego",
+            "certificate_hash": "dd25293dfa799e7fca7b22a2553a88f0213fe79f"
+          }
+        },
+        {
+          "client_id": "150285431568-grqkt0amhvvak1c0ighgs3ptp3smuju6.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "150285431568-2q9lr94k0hivblco76qt4ihgajevs8p1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7pjFLpGViyJUoinmagjXBKXz1mgKZ_KU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "150285431568-grqkt0amhvvak1c0ighgs3ptp3smuju6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

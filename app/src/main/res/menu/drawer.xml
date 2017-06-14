@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home"
+            android:title="Home" />
+        <item
+            android:id="@+id/nav_account"
+            android:icon="@drawable/ic_account"
+            android:title="My Account" />
+        <item
+            android:id="@+id/nav_models"
+            android:icon="@drawable/ic_bubble_chart"
+            android:title="My Models" />
+        <item
+            android:id="@+id/nav_whishlist"
+            android:icon="@drawable/ic_bookmark"
+            android:title="Wishlist" />
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings"
+            android:title="Settings" />
+    </group>
+
+    <item android:title="Account">
+        <menu>
+            <item
+                android:id="@+id/nav_logout"
+                android:icon="@drawable/ic_logout"
+                android:title="Logout"/>
+        </menu>
+    </item>
+
+</menu>
