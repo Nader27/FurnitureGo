@@ -5,6 +5,8 @@ var rotationValues = [];
 var scaleValues = [];
 
 var allCurrentModels = [];
+var allModelImgSources = ["assets/buttons/clock.png","assets/buttons/couch.png","assets/buttons/office_chair.png","assets/buttons/table.png","assets/buttons/trainer.png"] ;
+
 
 var oneFingerGestureAllowed = false;
 
@@ -16,7 +18,7 @@ AR.context.on2FingerGestureStarted = function() {
 }
 
 var World = {
-    modelPaths: ["assets/models/clock.wt3", "assets/models/couch.wt3", "assets/models/officechair.wt3", "assets/models/table.wt3", "assets/models/trainer.wt3"],
+    modelPaths: ["assets/models/clock.wt3", "assets/models/couch.wt3", "assets/models/officechair.wt3", "assets/models/table.wt3", "assets/models/trainer.wt3" ],
     /*
         requestedModel is the index of the next model to be created. This is necessary because we have to wait one frame in order to pass the correct initial position to the newly created model.
         initialDrag is a boolean that serves the purpose of swiping the model into the scene. In the moment that the model is created, the drag event has already started and will not be caught by the model, so the motion has to be carried out by the tracking plane.
@@ -81,21 +83,29 @@ var World = {
     },
 
     setupEventListeners: function setupEventListenersFn() {
-        document.getElementById("tracking-model-button-clock").addEventListener('touchstart', function(ev){
+            var id = 'tracking-model-button-' ;
+            for(var i = 0 ; i <5 ; i++){
+               document.getElementById(id+i).addEventListener('touchstart', function(ev){
+                  World.requestedModel = i;
+               }, false);
+            }
+        /*
+        document.getElementById("tracking-model-button-0").addEventListener('touchstart', function(ev){
             World.requestedModel = 0;
         }, false);
-        document.getElementById("tracking-model-button-couch").addEventListener('touchstart', function(ev){
+        document.getElementById("tracking-model-button-1").addEventListener('touchstart', function(ev){
             World.requestedModel = 1;
         }, false);
-        document.getElementById("tracking-model-button-chair").addEventListener('touchstart', function(ev){
+        document.getElementById("tracking-model-button-2").addEventListener('touchstart', function(ev){
             World.requestedModel = 2;
         }, false);
-        document.getElementById("tracking-model-button-table").addEventListener('touchstart', function(ev){
+        document.getElementById("tracking-model-button-3").addEventListener('touchstart', function(ev){
             World.requestedModel = 3;
         }, false);
-        document.getElementById("tracking-model-button-trainer").addEventListener('touchstart', function(ev){
+        document.getElementById("tracking-model-button-4").addEventListener('touchstart', function(ev){
             World.requestedModel = 4;
         }, false);
+        */
     },
 
     updatePlaneDrag: function updatePlaneDragFn(xPos, yPos) {
@@ -122,7 +132,12 @@ var World = {
             
             document.getElementById("tracking-start-stop-button").src = "assets/buttons/stop.png";
             document.getElementById("tracking-height-slider-container").style.visibility = "hidden";
-            
+            //document.getElementById("test").src = "assets/buttons/table.png" ; // da yeegy fe json w yet3ml array shayla kol el paths ele gaya mn JSON ele mawgooda 3ala el device ele et3amalaha dowmload
+
+            for(var i=0;i<5;i++){
+                document.getElementById("tracking-model-button-"+i).src = allModelImgSources[i]; // assign images to input tags
+            }
+
             this.tracker.state = AR.InstantTrackerState.TRACKING;
         } else {
             
@@ -134,7 +149,8 @@ var World = {
             
             document.getElementById("tracking-start-stop-button").src = "assets/buttons/start.png";
             document.getElementById("tracking-height-slider-container").style.visibility = "visible";
-            
+
+
             this.tracker.state = AR.InstantTrackerState.INITIALIZING;
         }
     },
