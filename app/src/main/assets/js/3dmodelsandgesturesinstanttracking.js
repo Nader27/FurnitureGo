@@ -83,12 +83,11 @@ var World = {
     },
 
     setupEventListeners: function setupEventListenersFn() {
-            var id = 'tracking-model-button-' ;
-            for(var i = 0 ; i <5 ; i++){
-               document.getElementById(id+i).addEventListener('touchstart', function(ev){
-                  World.requestedModel = i;
-               }, false);
-            }
+
+            $('.tracking-model-button-inactive').on('click',function(){
+                World.requestedModel = $(this).data("id");
+                alert($(this).data("id"));
+            });
         /*
         document.getElementById("tracking-model-button-0").addEventListener('touchstart', function(ev){
             World.requestedModel = 0;
@@ -121,7 +120,16 @@ var World = {
     },
 
     changeTrackerState: function changeTrackerStateFn() {
-        
+
+            // el moshkela :
+            // 1- lama betdoos start w el items btezhar , lama betdoos stop w b3deen start tany btezhar el items tany fa lazem ne3ml reset lel div deh
+            // 2- el listiner ta2reban feh moshkela bta3 el items la2eno mesh byezher el alert
+            for(var i=0;i<allModelImgSources.length;i++){
+               $("#inputs").append("<input data-id="+i+" class='tracking-model-button-inactive' type='image' src="+allModelImgSources[i]+" />");
+            }
+
+
+
         if (this.tracker.state === AR.InstantTrackerState.INITIALIZING) {
             
             var els = [].slice.apply(document.getElementsByClassName("tracking-model-button-inactive"));
@@ -132,11 +140,6 @@ var World = {
             
             document.getElementById("tracking-start-stop-button").src = "assets/buttons/stop.png";
             document.getElementById("tracking-height-slider-container").style.visibility = "hidden";
-            //document.getElementById("test").src = "assets/buttons/table.png" ; // da yeegy fe json w yet3ml array shayla kol el paths ele gaya mn JSON ele mawgooda 3ala el device ele et3amalaha dowmload
-
-            for(var i=0;i<5;i++){
-                document.getElementById("tracking-model-button-"+i).src = allModelImgSources[i]; // assign images to input tags
-            }
 
             this.tracker.state = AR.InstantTrackerState.TRACKING;
         } else {
@@ -149,7 +152,6 @@ var World = {
             
             document.getElementById("tracking-start-stop-button").src = "assets/buttons/start.png";
             document.getElementById("tracking-height-slider-container").style.visibility = "visible";
-
 
             this.tracker.state = AR.InstantTrackerState.INITIALIZING;
         }
