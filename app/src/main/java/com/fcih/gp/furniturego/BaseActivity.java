@@ -70,6 +70,7 @@ public class BaseActivity extends AppCompatActivity
             navigationView = (NavigationView) findViewById(R.id.nav_view);
             navigationView.setNavigationItemSelectedListener(this);
             onNavigationItemSelected(navigationView.getMenu().getItem(0));
+
         }
 
     }
