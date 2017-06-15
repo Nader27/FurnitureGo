@@ -4,12 +4,11 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.webkit.WebView;
 import android.widget.Toast;
@@ -23,8 +22,13 @@ import com.wikitude.common.camera.CameraSettings;
 import com.wikitude.common.permission.PermissionManager;
 import com.wikitude.tools.device.features.MissingDeviceFeatures;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  * Abstract activity which handles live-cycle events.
@@ -53,6 +57,31 @@ public abstract class AbstractArchitectCamActivity extends Activity implements A
 	 */
 	protected ArchitectView.ArchitectWorldLoadedListener worldLoadedListener;
 	private PermissionManager mPermissionManager;
+
+	private static String[] getDownloaded3D(String pathname) {
+		File file;
+		final JSONArray models = new JSONArray();
+		final String ATTR_3D = "model";
+		final String ATTR_Image = "image";
+		final String Model_ext = ".wt3";
+		final String Image_ext = ".png";
+		file = new File(pathname);
+		File list[] = file.listFiles();
+		for (File aList : list) {
+			if (aList.isDirectory()) {
+				File model = new File(pathname + File.separator + aList.getName() + Model_ext);
+				File image = new File(pathname + File.separator + aList.getName() + Image_ext);
+				if (model.exists() && image.exists()) {
+					final HashMap<String, String> modelInformation = new HashMap<String, String>();
+					modelInformation.put(ATTR_3D, model.getPath());
+					modelInformation.put(ATTR_Image, image.getPath());
+					models.put(new JSONObject(modelInformation));
+				}
+			}
+
+		}
+		return new String[]{models.toString()};
+	}
 
 	/** Called when the activity is first created. */
 	@SuppressLint("NewApi")
@@ -90,12 +119,7 @@ public abstract class AbstractArchitectCamActivity extends Activity implements A
 				alertBuilder.setCancelable(true);
 				alertBuilder.setTitle("Wikitude Permissions");
 				alertBuilder.setMessage("The Wikitude SDK needs the following permissions to enable an AR experience: " + Arrays.toString(permissions));
-				alertBuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						mPermissionManager.positiveRationaleResult(requestCode, permissions);
-					}
-				});
+				alertBuilder.setPositiveButton(android.R.string.yes, (dialog, which) -> mPermissionManager.positiveRationaleResult(requestCode, permissions));
 
 				AlertDialog alert = alertBuilder.create();
 				alert.show();
@@ -200,7 +224,8 @@ public abstract class AbstractArchitectCamActivity extends Activity implements A
 					// set the culling distance - meaning: the maximum distance to render geo-content
 					this.architectView.setCullingDistance( this.getInitialCullingDistanceMeters() );
 				}
-
+				String path = Environment.getExternalStorageDirectory().toString() + File.separator + "FurnitureGo";
+				callJavaScript("World.loadPathFromJsonData", getDownloaded3D(path));
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}

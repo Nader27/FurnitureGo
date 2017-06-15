@@ -28,9 +28,15 @@ var World = {
     initialDrag: false,
     lastAddedModel: null,
 
-    init: function initFn() {
+/*    init: function initFn() {
+        $("#inputs").empty();
+        for(var i=0;i<allModelImgSources.length;i++){
+            $("#inputs").append("<input data-id=" + i + " class='tracking-model-button list-group-item' type='image' src="+allModelImgSources[i]+" />");
+        }
+        $("#inputs").append("<input id='tracking-model-reset-button' class='tracking-model-button list-group-item' type='image' src='assets/buttons/trash.png' onclick='World.resetModels()' />");
+
         this.createOverlays();
-    },
+    },*/
 
     createOverlays: function createOverlaysFn() {
         var crossHairsRedImage = new AR.ImageResource("assets/crosshairs_red.png");
@@ -86,7 +92,6 @@ var World = {
 
             $('.tracking-model-button-inactive').on('click',function(){
                 World.requestedModel = $(this).data("id");
-                alert($(this).data("id"));
             });
         /*
         document.getElementById("tracking-model-button-0").addEventListener('touchstart', function(ev){
@@ -121,35 +126,16 @@ var World = {
 
     changeTrackerState: function changeTrackerStateFn() {
 
-            // el moshkela :
-            // 1- lama betdoos start w el items btezhar , lama betdoos stop w b3deen start tany btezhar el items tany fa lazem ne3ml reset lel div deh
-            // 2- el listiner ta2reban feh moshkela bta3 el items la2eno mesh byezher el alert
-            for(var i=0;i<allModelImgSources.length;i++){
-               $("#inputs").append("<input data-id="+i+" class='tracking-model-button-inactive' type='image' src="+allModelImgSources[i]+" />");
-            }
-
-
-
         if (this.tracker.state === AR.InstantTrackerState.INITIALIZING) {
-            
-            var els = [].slice.apply(document.getElementsByClassName("tracking-model-button-inactive"));
-            for (var i = 0; i < els.length; i++) {
-                console.log(els[i]);
-                els[i].className = els[i].className = "tracking-model-button";
-            }
-            
+
+            $("#sidebar").show();
             document.getElementById("tracking-start-stop-button").src = "assets/buttons/stop.png";
             document.getElementById("tracking-height-slider-container").style.visibility = "hidden";
 
             this.tracker.state = AR.InstantTrackerState.TRACKING;
         } else {
-            
-            var els = [].slice.apply(document.getElementsByClassName("tracking-model-button"));
-            for (var i = 0; i < els.length; i++) {
-                console.log(els[i]);
-                els[i].className = els[i].className = "tracking-model-button-inactive";
-            }
-            
+
+            $("#sidebar").hide();
             document.getElementById("tracking-start-stop-button").src = "assets/buttons/start.png";
             document.getElementById("tracking-height-slider-container").style.visibility = "visible";
 
@@ -243,7 +229,23 @@ var World = {
     resetAllModelValues: function resetAllModelValuesFn() {
         rotationValues = [];
         scaleValues = [];
-    }
-};
+    },
 
-World.init();
+    loadPathFromJsonData: function loadPathFromJsonDataFn(paths) {
+    	// empty list of visible markers
+    	World.modelPaths = []
+    	allModelImgSources = []
+    	for (var i = 0; i < paths.length; i++) {
+    	World.modelPaths.push(paths.model)
+    	allModelImgSources.push(paths.model)
+    	}
+        $("#inputs").empty();
+        for(var i=0;i<allModelImgSources.length;i++){
+            $("#inputs").append("<input data-id=" + i + " class='tracking-model-button list-group-item' type='image' src="+allModelImgSources[i]+" />");
+        }
+        $("#inputs").append("<input id='tracking-model-reset-button' class='tracking-model-button list-group-item' type='image' src='assets/buttons/trash.png' onclick='World.resetModels()' />");
+    	this.createOverlays();
+   	}
+};
+/*
+World.init();*/
