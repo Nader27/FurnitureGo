@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">SDK Examples</string>
+    <string name="app_name">Furniture Go</string>
     <string name="main_title_urlLauncher">Launch World via url</string>
     <string name="compass_accuracy_low">Please re-calibrate compass by waving your device in a figure 8 motion.</string>
     <string name="location_fetching">Trying to find out where you are</string>

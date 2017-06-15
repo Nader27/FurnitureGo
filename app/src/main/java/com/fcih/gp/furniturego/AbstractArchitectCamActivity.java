@@ -66,19 +66,21 @@ public abstract class AbstractArchitectCamActivity extends Activity implements A
 		final String Model_ext = ".wt3";
 		final String Image_ext = ".png";
 		file = new File(pathname);
-		File list[] = file.listFiles();
-		for (File aList : list) {
-			if (aList.isDirectory()) {
-				File model = new File(pathname + File.separator + aList.getName() + Model_ext);
-				File image = new File(pathname + File.separator + aList.getName() + Image_ext);
-				if (model.exists() && image.exists()) {
-					final HashMap<String, String> modelInformation = new HashMap<String, String>();
-					modelInformation.put(ATTR_3D, model.getPath());
-					modelInformation.put(ATTR_Image, image.getPath());
-					models.put(new JSONObject(modelInformation));
+		if (file.exists()) {
+			String list[] = file.list();
+			for (String name : list) {
+				if (new File(pathname + File.separator + name).isDirectory()) {
+					File model = new File(pathname + File.separator + name + Model_ext);
+					File image = new File(pathname + File.separator + name + Image_ext);
+					if (model.exists() && image.exists()) {
+						final HashMap<String, String> modelInformation = new HashMap<String, String>();
+						modelInformation.put(ATTR_3D, model.getPath());
+						modelInformation.put(ATTR_Image, image.getPath());
+						models.put(new JSONObject(modelInformation));
+					}
 				}
-			}
 
+			}
 		}
 		return new String[]{models.toString()};
 	}
