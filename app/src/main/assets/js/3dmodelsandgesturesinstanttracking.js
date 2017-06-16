@@ -54,7 +54,7 @@ var World = {
                 alert(errorMessage);
             }
         });
-        
+
         this.instantTrackable = new AR.InstantTrackable(this.tracker, {
             drawables: {
                 cam: crossHairsBlueDrawable,
@@ -142,11 +142,11 @@ var World = {
             this.tracker.state = AR.InstantTrackerState.INITIALIZING;
         }
     },
-    
+
     changeTrackingHeight: function changeTrackingHeightFn(height) {
         this.tracker.deviceHeight = parseFloat(height);
     },
-    
+
     addModel: function addModelFn(pathIndex, xpos, ypos) {
         if (World.isTracking()) {
             var modelIndex = rotationValues.length;
@@ -174,7 +174,7 @@ var World = {
                         // We recommend setting the entire translate property rather than
                         // its individual components as the latter would cause several
                         // call to native, which can potentially lead to performance
-                        // issues on older devices. The same applied to the rotate and 
+                        // issues on older devices. The same applied to the rotate and
                         // scale property
                         this.translate = {x:intersectionX, y:intersectionY};
                     }

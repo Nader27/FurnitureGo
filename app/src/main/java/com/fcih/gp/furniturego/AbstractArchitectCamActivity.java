@@ -70,8 +70,8 @@ public abstract class AbstractArchitectCamActivity extends Activity implements A
 			String list[] = file.list();
 			for (String name : list) {
 				if (new File(pathname + File.separator + name).isDirectory()) {
-					File model = new File(pathname + File.separator + name + Model_ext);
-					File image = new File(pathname + File.separator + name + Image_ext);
+					File model = new File(pathname + File.separator + name + File.separator+ name+ Model_ext);
+					File image = new File(pathname + File.separator + name + File.separator+ name+ Image_ext);
 					if (model.exists() && image.exists()) {
 						final HashMap<String, String> modelInformation = new HashMap<String, String>();
 						modelInformation.put(ATTR_3D, model.getPath());
@@ -102,7 +102,7 @@ public abstract class AbstractArchitectCamActivity extends Activity implements A
 			finish();
 		}
 		mPermissionManager = ArchitectView.getPermissionManager();
-		String[] permissions = new String[]{Manifest.permission.CAMERA} ;
+		String[] permissions = new String[]{Manifest.permission.CAMERA,Manifest.permission.READ_EXTERNAL_STORAGE} ;
 
 		mPermissionManager.checkPermissions(this, permissions, PermissionManager.WIKITUDE_PERMISSION_REQUEST, new PermissionManager.PermissionManagerCallback() {
 			@Override
