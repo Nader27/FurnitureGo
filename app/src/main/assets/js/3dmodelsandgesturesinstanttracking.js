@@ -90,7 +90,7 @@ var World = {
 
     setupEventListeners: function setupEventListenersFn() {
 
-            $('.tracking-model-button-inactive').on('click',function(){
+            $('.tracking-model-button').on('touchstart',function(){
                 World.requestedModel = $(this).data("id");
             });
         /*
