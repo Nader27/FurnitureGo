@@ -15,7 +15,7 @@ var oneFingerGestureAllowed = false;
 // intuitive experience
 AR.context.on2FingerGestureStarted = function() {
     oneFingerGestureAllowed = false;
-}
+};
 
 var World = {
     modelPaths: ["assets/models/clock.wt3", "assets/models/couch.wt3", "assets/models/officechair.wt3", "assets/models/table.wt3", "assets/models/trainer.wt3" ],
@@ -93,23 +93,6 @@ var World = {
             $('.tracking-model-button').on('touchstart',function(){
                 World.requestedModel = $(this).data("id");
             });
-        /*
-        document.getElementById("tracking-model-button-0").addEventListener('touchstart', function(ev){
-            World.requestedModel = 0;
-        }, false);
-        document.getElementById("tracking-model-button-1").addEventListener('touchstart', function(ev){
-            World.requestedModel = 1;
-        }, false);
-        document.getElementById("tracking-model-button-2").addEventListener('touchstart', function(ev){
-            World.requestedModel = 2;
-        }, false);
-        document.getElementById("tracking-model-button-3").addEventListener('touchstart', function(ev){
-            World.requestedModel = 3;
-        }, false);
-        document.getElementById("tracking-model-button-4").addEventListener('touchstart', function(ev){
-            World.requestedModel = 4;
-        }, false);
-        */
     },
 
     updatePlaneDrag: function updatePlaneDragFn(xPos, yPos) {
@@ -201,7 +184,7 @@ var World = {
                 onScaleEnded: function(scale) {
                     scaleValues[modelIndex] = this.scale.x;
                 }
-            })
+            });
 
             allCurrentModels.push(model);
             lastAddedModel = model;
@@ -219,11 +202,15 @@ var World = {
     },
 
     resetModels: function resetModelsFn() {
+        if (confirm('Are you sure you want to Delete All Models?')) {
         for (var i = 0; i < allCurrentModels.length; i++) {
             this.instantTrackable.drawables.removeCamDrawable(allCurrentModels[i]);
         }
-        allCurrentModels = [];
-        World.resetAllModelValues();
+            allCurrentModels = [];
+            World.resetAllModelValues();
+        } else {
+            // Do nothing!
+        }
     },
 
     resetAllModelValues: function resetAllModelValuesFn() {

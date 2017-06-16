@@ -156,14 +156,14 @@
 /* Small Devices, Tablets */
 @media only screen and (max-width : 768px) {
     .bootsidemenu {
-        min-width: 200px;
+        min-width: 20%;
     }
 }
 
 /* Extra Small Devices, Phones */ 
 @media only screen and (max-width : 480px) {
     .bootsidemenu {
-        min-width: 90%;
+        min-width: 20%;
     }
 }
 
