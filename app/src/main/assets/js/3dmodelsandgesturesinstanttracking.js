@@ -239,6 +239,7 @@ var World = {
     	for (var i = 0; i < paths.length; i++) {
             World.modelPaths.push(paths[i].model);
             allModelImgSources.push(paths[i].image) ;
+
     	}
         $("#inputs").empty();
         for(var i=0;i<allModelImgSources.length;i++){
