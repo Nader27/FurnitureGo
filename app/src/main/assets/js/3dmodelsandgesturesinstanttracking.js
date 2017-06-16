@@ -233,11 +233,12 @@ var World = {
 
     loadPathFromJsonData: function loadPathFromJsonDataFn(paths) {
     	// empty list of visible markers
-    	World.modelPaths = []
-    	allModelImgSources = []
+
+    	World.modelPaths = [];
+    	allModelImgSources = [];
     	for (var i = 0; i < paths.length; i++) {
-    	World.modelPaths.push(paths.model)
-    	allModelImgSources.push(paths.model)
+            World.modelPaths.push(paths[i].model);
+            allModelImgSources.push(paths[i].image) ;
     	}
         $("#inputs").empty();
         for(var i=0;i<allModelImgSources.length;i++){
