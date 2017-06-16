@@ -134,7 +134,6 @@
             }
         });
 
-
         function toggle() {
             if (menu.status == "opened") {
                 closeMenu(true);

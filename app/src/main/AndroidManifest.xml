@@ -56,7 +56,6 @@
         android:theme="@style/AppTheme">
 
         <!-- poi detail screen -->
-        <activity android:name=".SamplePoiDetailActivity" />
 
         <!-- cam activities -->
         <activity

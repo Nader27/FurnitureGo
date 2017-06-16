@@ -1,25 +1,18 @@
 package com.fcih.gp.furniturego;
 
-import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.wikitude.architect.ArchitectJavaScriptInterfaceListener;
 import com.wikitude.architect.ArchitectStartupConfiguration;
 import com.wikitude.architect.ArchitectView;
-import com.wikitude.architect.ArchitectView.CaptureScreenCallback;
 import com.wikitude.architect.ArchitectView.SensorAccuracyChangeListener;
 import com.wikitude.common.camera.CameraSettings;
-
-import org.json.JSONException;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -66,36 +59,6 @@ public class SampleCamActivity extends AbstractArchitectCamActivity {
             if (accuracy < SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM && SampleCamActivity.this != null && !SampleCamActivity.this.isFinishing() && System.currentTimeMillis() - SampleCamActivity.this.lastCalibrationToastShownTimeMillis > 5 * 1000) {
                 Toast.makeText(SampleCamActivity.this, R.string.compass_accuracy_low, Toast.LENGTH_LONG).show();
                 SampleCamActivity.this.lastCalibrationToastShownTimeMillis = System.currentTimeMillis();
-            }
-        };
-    }
-
-	@Override
-	public ArchitectJavaScriptInterfaceListener getArchitectJavaScriptInterfaceListener() {
-        return jsonObject -> {
-            try {
-                switch (jsonObject.getString("action")) {
-                    case "present_poi_details":
-                        final Intent poiDetailIntent = new Intent(SampleCamActivity.this, SamplePoiDetailActivity.class);
-                        poiDetailIntent.putExtra(SamplePoiDetailActivity.EXTRAS_KEY_POI_ID, jsonObject.getString("id"));
-                        poiDetailIntent.putExtra(SamplePoiDetailActivity.EXTRAS_KEY_POI_TITILE, jsonObject.getString("title"));
-                        poiDetailIntent.putExtra(SamplePoiDetailActivity.EXTRAS_KEY_POI_DESCR, jsonObject.getString("description"));
-                        SampleCamActivity.this.startActivity(poiDetailIntent);
-                        break;
-
-                    case "capture_screen":
-                        SampleCamActivity.this.architectView.captureScreen(CaptureScreenCallback.CAPTURE_MODE_CAM_AND_WEBVIEW, screenCapture -> {
-                            if (ContextCompat.checkSelfPermission(SampleCamActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                                SampleCamActivity.this.screenCapture = screenCapture;
-                                ActivityCompat.requestPermissions(SampleCamActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WIKITUDE_PERMISSIONS_REQUEST_EXTERNAL_STORAGE);
-                            } else {
-                                SampleCamActivity.this.saveScreenCaptureToExternalStorage(screenCapture);
-                            }
-                        });
-                        break;
-                }
-            } catch (JSONException e) {
-                Log.e(TAG, "onJSONObjectReceived: ", e);
             }
         };
     }
