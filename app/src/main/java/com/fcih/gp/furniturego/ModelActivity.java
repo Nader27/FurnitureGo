@@ -56,7 +56,7 @@ public class ModelActivity extends AppCompatActivity {
             ImageView mimageView = (ImageView) findViewById(R.id.model_imageView);
             CollapsingToolbarLayout mTitleBarView = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
             Picasso.with(getApplicationContext()).load(Data.image_path).resize(75, 75).into(mimageView);
-            mCompanyView.setText(Data.companies.users.name);
+            mCompanyView.setText(Data.companies.name);
             mNameView.setText(Data.name);
             mTitleBarView.setTitle(Data.name);
             StorageReference storageRef = storage.getReference();

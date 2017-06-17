@@ -83,7 +83,7 @@ public class ItemFragment extends Fragment {
                         protected void populateViewHolder(viewholder viewHolder, FireBaseHelper.Objects model, int position) {
                             model.Findbykey(mAdapter.getRef(position).getKey(), Data -> {
                                 viewHolder.mTitleView.setText(Data.name);
-                                viewHolder.mCompanyView.setText(Data.companies.users.name);
+                                viewHolder.mCompanyView.setText(Data.companies.name);
                                 viewHolder.mRateView.setText(getRate(Data.feedbacks));
                                 Picasso.with(getContext()).load(Data.image_path).into(viewHolder.mImageView);
                                 viewHolder.mView.setOnClickListener(v -> {

@@ -16,10 +16,6 @@
     <string name="poi_id">ID</string>
     <string name="title_activity_sample1_poi_detail">Sample 5.1 POI Detail</string>
     <string name="footer">Sample App</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-
-    <string name="action_settings">Settings</string>
     <string name="title_activity_login">Welcome</string>
 
     <!-- Strings related to login -->
@@ -27,10 +23,7 @@
     <string name="prompt_password">Password (optional)</string>
     <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
@@ -39,4 +32,52 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_model">ModelActivity</string>
+    <!-- Strings related to login & registration -->
+    <string name="User_Name">USERNAME</string>
+    <string name="password">PASSWORD</string>
+    <string name="sign_in">SIGNIN</string>
+    <string name="full_name">FULL NAME</string>
+    <string name="email">EMAIL</string>
+    <string name="sign_up">SIGNUP</string>
+    <string name="or">OR</string>
+    <string name="google_icon">Google Icon</string>
+    <string name="twitter_icon">Twitter Icon</string>
+    <string name="facebook_icon">Facebook Icon</string>
+    <string name="already_have_account">ALREADY HAVE ACCOUNT</string>
+    <string name="need_account">NEED ACCOUNT</string>
+    <string name="forget_password">Forget Password ?!</string>
+    <string name="error_invalid_username">Invalid Username</string>
+    <string name="error_field_required">Field Required</string>
+    <string name="error_invalid_email">Invalid Email</string>
+    <string name="error_invalid_password">Invalid Password</string>
+    <string name="error_invalid_fullname">Invalid Name</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="title_activity_base">BaseActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="gender">GENDER</string>
+    <string name="children">CHILDREN</string>
+    <string name="country">COUNTRY</string>
+    <string name="city">CITY</string>
+    <string name="birthday">BIRTHDATE</string>
+    <string name="error_invalid_cityorcountry">Invalid City or Country</string>
+    <string name="search">search</string>
+    <string name="need_description">Need Description</string>
+    <string name="need_name">Need Name</string>
+    <string name="add">Add</string>
+    <string name="needed">Needed</string>
+    <string name="have">Have</string>
+    <string name="Name">Name</string>
+    <string name="retype_email">ReType Email</string>
+    <string name="change_email">Change Email</string>
+    <string name="change_password">Change Password</string>
+    <string name="retype_password">ReType Password</string>
+    <string name="personal_info">Personal Info</string>
+    <string name="save">Save</string>
+    <string name="enter_your_email">Enter Your Email</string>
+    <string name="browse">Browse</string>
 </resources>
