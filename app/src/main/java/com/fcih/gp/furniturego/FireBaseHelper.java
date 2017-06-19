@@ -2038,11 +2038,8 @@ public class FireBaseHelper {
 
         public enum Table {
             //ex:Column("ColumnName"),
-            Date("date"),
-            Feedback("feedback"),
             Object_id("object_id"),
-            Rate("rate"),
-            Uid("uid");
+            User_id("user_id");
 
             public final String text;
 
