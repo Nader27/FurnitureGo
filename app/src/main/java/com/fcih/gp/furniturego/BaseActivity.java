@@ -53,7 +53,7 @@ public class BaseActivity extends AppCompatActivity
                 // User is signed out
                 Log.d(TAG, "onAuthStateChanged:signed_out");
                 Intent intent = new Intent(BaseActivity.this, LoginActivity.class);
-                intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
+                intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
             }

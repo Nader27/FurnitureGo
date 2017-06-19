@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/start_background"
-    tools:context="fcih.babyapp.LoginActivity">
+    android:theme="@style/AppTheme.NoActionBar"
+    tools:context=".LoginActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -36,7 +37,7 @@
                 android:paddingBottom="40dp"
                 android:text="@string/app_name"
                 android:textColor="@color/white"
-                android:textSize="60sp"
+                android:textSize="50sp"
                 android:textStyle="italic" />
 
             <LinearLayout

@@ -1,5 +1,7 @@
 package com.fcih.gp.furniturego;
 
+import android.util.Log;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,7 +20,7 @@ import java.util.Map;
 public class FireBaseHelper {
     private static final FirebaseDatabase database = FirebaseDatabase.getInstance();
     private static final DatabaseReference myRootRef = database.getReference();
-
+    private static final String TAG = "FirebaseHelper";
 
     public interface OnGetDataListener<T> {
         void onSuccess(T Data);
@@ -222,7 +224,7 @@ public class FireBaseHelper {
                 Value = (String) value;
 
             } catch (SecurityException | NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
+                Log.e(TAG, "Firebase Invoke Error :" + e.getMessage(), e);
             }
             return Value;
         }
@@ -234,7 +236,7 @@ public class FireBaseHelper {
                 Method method = getClass().getDeclaredMethod("set" + Name, cArg);
                 method.invoke(obj, Value);
             } catch (SecurityException | NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
+                Log.e(TAG, "Firebase Invoke Error :" + e.getMessage(), e);
             }
         }
 
@@ -343,7 +345,7 @@ public class FireBaseHelper {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.w(TAG, "Firebase Warning :" + databaseError);
                 }
             });
         }
@@ -389,7 +391,7 @@ public class FireBaseHelper {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.w(TAG, "Firebase Warning :" + databaseError);
                 }
             });
         }
@@ -434,7 +436,7 @@ public class FireBaseHelper {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.w(TAG, "Firebase Warning :" + databaseError);
                 }
             });
         }
@@ -451,7 +453,7 @@ public class FireBaseHelper {
                 Value = (String) value;
 
             } catch (SecurityException | NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
+                Log.e(TAG, "Firebase Invoke Error :" + e.getMessage(), e);
             }
             return Value;
         }
@@ -463,7 +465,7 @@ public class FireBaseHelper {
                 Method method = getClass().getDeclaredMethod("set" + Name, cArg);
                 method.invoke(obj, Value);
             } catch (SecurityException | NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
+                Log.e(TAG, "Firebase Invoke Error :" + e.getMessage(), e);
             }
         }
 
@@ -608,7 +610,7 @@ public class FireBaseHelper {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.w(TAG, "Firebase Warning :" + databaseError);
                 }
             });
         }
@@ -647,7 +649,7 @@ public class FireBaseHelper {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.w(TAG, "Firebase Warning :" + databaseError);
                 }
             });
         }
@@ -684,7 +686,7 @@ public class FireBaseHelper {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.w(TAG, "Firebase Warning :" + databaseError);
                 }
             });
         }
@@ -701,7 +703,7 @@ public class FireBaseHelper {
                 Value = (String) value;
 
             } catch (SecurityException | NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
+                Log.e(TAG, "Firebase Invoke Error :" + e.getMessage(), e);
             }
             return Value;
         }
@@ -713,7 +715,7 @@ public class FireBaseHelper {
                 Method method = getClass().getDeclaredMethod("set" + Name, cArg);
                 method.invoke(obj, Value);
             } catch (SecurityException | NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
+                Log.e(TAG, "Firebase Invoke Error :" + e.getMessage(), e);
             }
         }
 
@@ -751,10 +753,10 @@ public class FireBaseHelper {
         public String company_id;
         public String date;
         public String description;
+        public String image_path;
         public String model_path;
         public String name;
         public String price;
-        public String image_path;
         //ex:public ForeignClass ForeignClass
         public Categories categories;
         public Companies companies;
@@ -903,7 +905,7 @@ public class FireBaseHelper {
 
                                 @Override
                                 public void onCancelled(DatabaseError databaseError) {
-
+                                    Log.w(TAG, "Firebase Warning :" + databaseError);
                                 }
                             });
                         });
@@ -912,7 +914,7 @@ public class FireBaseHelper {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.w(TAG, "Firebase Warning :" + databaseError);
                 }
             });
         }
@@ -938,10 +940,28 @@ public class FireBaseHelper {
                             obj.companies = Data;
                             categories.Findbykey(obj.category, Data1 -> {
                                 obj.categories = Data1;
-                                Items.add(obj);
-                                if (!iterator.hasNext()) {
-                                    listener.onSuccess(Items);
-                                }
+                                Feedbacks.Ref.orderByChild(Feedbacks.Table.Object_id.text).equalTo(obj.Key).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        final Feedbacks fed = new Feedbacks();
+                                        for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                            for (Feedbacks.Table T : Feedbacks.Table.values()) {
+                                                fed.setbyName(fed, T.name(), data.child(T.text).getValue().toString());
+                                                obj.feedbacks.add(fed);
+                                            }
+                                        }
+                                        Items.add(obj);
+                                        if (!iterator.hasNext()) {
+                                            listener.onSuccess(Items);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+                                        Log.w(TAG, "Firebase Warning :" + databaseError);
+                                    }
+                                });
+
                             });
                         });
                     }
@@ -953,7 +973,7 @@ public class FireBaseHelper {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.w(TAG, "Firebase Warning :" + databaseError);
                 }
             });
         }
@@ -977,10 +997,27 @@ public class FireBaseHelper {
                             obj.companies = Data;
                             categories.Findbykey(obj.category, Data1 -> {
                                 obj.categories = Data1;
-                                Items.add(obj);
-                                if (!iterator.hasNext()) {
-                                    listener.onSuccess(Items);
-                                }
+                                Feedbacks.Ref.orderByChild(Feedbacks.Table.Object_id.text).equalTo(obj.Key).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        final Feedbacks fed = new Feedbacks();
+                                        for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                            for (Feedbacks.Table T : Feedbacks.Table.values()) {
+                                                fed.setbyName(fed, T.name(), data.child(T.text).getValue().toString());
+                                                obj.feedbacks.add(fed);
+                                            }
+                                        }
+                                        Items.add(obj);
+                                        if (!iterator.hasNext()) {
+                                            listener.onSuccess(Items);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+                                        Log.w(TAG, "Firebase Warning :" + databaseError);
+                                    }
+                                });
                             });
                         });
                     }
@@ -992,7 +1029,7 @@ public class FireBaseHelper {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.w(TAG, "Firebase Warning :" + databaseError);
                 }
             });
         }
@@ -1009,7 +1046,7 @@ public class FireBaseHelper {
                 Value = (String) value;
 
             } catch (SecurityException | NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
+                Log.e(TAG, "Firebase Invoke Error :" + e.getMessage(), e);
             }
             return Value;
         }
@@ -1021,7 +1058,7 @@ public class FireBaseHelper {
                 Method method = getClass().getDeclaredMethod("set" + Name, cArg);
                 method.invoke(obj, Value);
             } catch (SecurityException | NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
+                Log.e(TAG, "Firebase Invoke Error :" + e.getMessage(), e);
             }
         }
 
@@ -1029,7 +1066,7 @@ public class FireBaseHelper {
             //ex:Column("ColumnName"),
             Category("category"),
             Company_id("company_id"),
-            Date("data"),
+            Date("date"),
             Description("description"),
             Model_path("model_path"),
             Name("name"),
@@ -1163,7 +1200,7 @@ public class FireBaseHelper {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.w(TAG, "Firebase Warning :" + databaseError);
                 }
             });
         }
@@ -1202,7 +1239,7 @@ public class FireBaseHelper {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.w(TAG, "Firebase Warning :" + databaseError);
                 }
             });
         }
@@ -1239,7 +1276,7 @@ public class FireBaseHelper {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.w(TAG, "Firebase Warning :" + databaseError);
                 }
             });
         }
@@ -1256,7 +1293,7 @@ public class FireBaseHelper {
                 Value = (String) value;
 
             } catch (SecurityException | NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
+                Log.e(TAG, "Firebase Invoke Error :" + e.getMessage(), e);
             }
             return Value;
         }
@@ -1268,7 +1305,7 @@ public class FireBaseHelper {
                 Method method = getClass().getDeclaredMethod("set" + Name, cArg);
                 method.invoke(obj, Value);
             } catch (SecurityException | NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
+                Log.e(TAG, "Firebase Invoke Error :" + e.getMessage(), e);
             }
         }
 
@@ -1380,7 +1417,7 @@ public class FireBaseHelper {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.w(TAG, "Firebase Warning :" + databaseError);
                 }
             });
         }
@@ -1426,7 +1463,7 @@ public class FireBaseHelper {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.w(TAG, "Firebase Warning :" + databaseError);
                 }
             });
         }
@@ -1471,7 +1508,7 @@ public class FireBaseHelper {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.w(TAG, "Firebase Warning :" + databaseError);
                 }
             });
         }
@@ -1488,7 +1525,7 @@ public class FireBaseHelper {
                 Value = (String) value;
 
             } catch (SecurityException | NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
+                Log.e(TAG, "Firebase Invoke Error :" + e.getMessage(), e);
             }
             return Value;
         }
@@ -1500,7 +1537,7 @@ public class FireBaseHelper {
                 Method method = getClass().getDeclaredMethod("set" + Name, cArg);
                 method.invoke(obj, Value);
             } catch (SecurityException | NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
+                Log.e(TAG, "Firebase Invoke Error :" + e.getMessage(), e);
             }
         }
 
@@ -1747,7 +1784,7 @@ public class FireBaseHelper {
                 Value = (String) value;
 
             } catch (SecurityException | NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
+                Log.e(TAG, "Firebase Invoke Error :" + e.getMessage(), e);
             }
             return Value;
         }
@@ -1759,7 +1796,243 @@ public class FireBaseHelper {
                 Method method = getClass().getDeclaredMethod("set" + Name, cArg);
                 method.invoke(obj, Value);
             } catch (SecurityException | NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
+                Log.e(TAG, "Firebase Invoke Error :" + e.getMessage(), e);
+            }
+        }
+
+        public enum Table {
+            //ex:Column("ColumnName"),
+            Date("date"),
+            Feedback("feedback"),
+            Object_id("object_id"),
+            Rate("rate"),
+            Uid("uid");
+
+            public final String text;
+
+            Table(final String text) {
+                this.text = text;
+            }
+
+            @Override
+            public String toString() {
+                return text;
+            }
+        }
+    }
+    //endregion
+
+    //region Favorites
+    public static class Favorites {
+        //TODO:-----------------------------------------------------
+        //ex: private static final DatabaseReference Ref = myRootRef.child("TableName");
+        public static final DatabaseReference Ref = myRootRef.child("Favorites");
+
+        public String Key;
+        //ex: public String Column;
+        public String object_id;
+        public String user_id;
+        //ex:public ForeignClass ForeignClass
+        public Objects objects;
+        public Users users;
+
+        public Favorites() {
+            //ex ForeignClass = new ForeignClass();
+            objects = new Objects();
+            users = new Users();
+        }
+
+        //region Getter & Setter
+
+        public String getObject_id() {
+            return object_id;
+        }
+
+        public void setObject_id(String object_id) {
+            this.object_id = object_id;
+        }
+
+        public String getUser_id() {
+            return user_id;
+        }
+
+        public void setUser_id(String user_id) {
+            this.user_id = user_id;
+        }
+
+
+        //endregion
+
+        public String Add() {
+            Map<String, String> Values = new HashMap<>();
+            for (Table T : Table.values()) {
+                Values.put(T.text, getbyName(this, T.name()));
+            }
+            DatabaseReference myref = Ref.push();
+            myref.setValue(Values);
+            return Key = myref.getKey();
+
+        }
+
+        public void Add(String Key) {
+            Map<String, String> Values = new HashMap<>();
+            for (Table T : Table.values()) {
+                Values.put(T.text, getbyName(this, T.name()));
+            }
+            Ref.child(Key).setValue(Values);
+        }
+
+        public void Update() {
+            Map<String, String> Values = new HashMap<>();
+            for (Table T : Table.values()) {
+                Values.put(T.text, getbyName(this, T.name()));
+            }
+            Ref.child(Key).setValue(Values);
+        }
+
+        public void Update(String key) {
+            Map<String, String> Values = new HashMap<>();
+            for (Table T : Table.values()) {
+                Values.put(T.text, getbyName(this, T.name()));
+            }
+            Ref.child(key).setValue(Values);
+        }
+
+        public void Findbykey(String key, final OnGetDataListener<Favorites> listener) {
+            Ref.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    //ex: final ClassName obj = new Teams();
+                    final Favorites obj = new Favorites();
+                    obj.Key = dataSnapshot.getKey();
+                    for (Table T : Table.values()) {
+                        setbyName(obj, T.name(), dataSnapshot.child(T.text).getValue().toString());
+                    }
+                    //if no foreign key
+                    //listener.onSuccess(obj);
+                    //ex:
+                    objects.Findbykey(obj.object_id, Data -> {
+                        obj.objects = Data;
+                        users.Findbykey(obj.user_id, Data1 -> {
+                            obj.users = Data1;
+                            listener.onSuccess(obj);
+                        });
+                    });
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+        public void Where(Table table, String Value, final OnGetDataListListener<Favorites> listener) {
+            //ex: final List<ClassName> Items = new ArrayList<>();
+            final List<Favorites> Items = new ArrayList<>();
+            Query query = Ref.orderByChild(table.text).equalTo(Value);
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    final Iterator iterator = dataSnapshot.getChildren().iterator();
+                    while (iterator.hasNext()) {
+                        DataSnapshot postSnapshot = (DataSnapshot) iterator.next();
+                        //ex: final ClassName obj = new Teams();
+                        final Favorites obj = new Favorites();
+                        obj.Key = postSnapshot.getKey();
+                        for (Table T : Table.values()) {
+                            setbyName(obj, T.name(), postSnapshot.child(T.text).getValue().toString());
+                        }
+
+                        objects.Findbykey(obj.object_id, Data -> {
+                            obj.objects = Data;
+                            users.Findbykey(obj.user_id, Data1 -> {
+                                obj.users = Data1;
+                                Items.add(obj);
+                                if (!iterator.hasNext()) {
+                                    listener.onSuccess(Items);
+                                }
+                            });
+                        });
+                    }
+                    if (dataSnapshot.getChildrenCount() == 0) {
+                        listener.onSuccess(Items);
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+        public void Tolist(final OnGetDataListListener<Favorites> listener) {
+            //ex: final List<ClassName> Items = new ArrayList<>();
+            final List<Favorites> Items = new ArrayList<>();
+            Ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(final DataSnapshot dataSnapshot) {
+                    final Iterator iterator = dataSnapshot.getChildren().iterator();
+                    while (iterator.hasNext()) {
+                        DataSnapshot postSnapshot = (DataSnapshot) iterator.next();
+                        //ex: final ClassName obj = new Teams();
+                        final Favorites obj = new Favorites();
+                        obj.Key = postSnapshot.getKey();
+                        for (Table T : Table.values()) {
+                            setbyName(obj, T.name(), postSnapshot.child(T.text).getValue().toString());
+                        }
+                        //if no foreign key
+                        objects.Findbykey(obj.object_id, Data -> {
+                            obj.objects = Data;
+                            users.Findbykey(obj.user_id, Data1 -> {
+                                obj.users = Data1;
+                                Items.add(obj);
+                                if (!iterator.hasNext()) {
+                                    listener.onSuccess(Items);
+                                }
+                            });
+                        });
+                    }
+                    if (dataSnapshot.getChildrenCount() == 0) {
+                        listener.onSuccess(Items);
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+        public void Remove(String Key) {
+            Ref.child(Key).removeValue();
+        }
+
+        private String getbyName(Favorites obj, String Name) {
+            String Value = "";
+            try {
+                Method method = getClass().getDeclaredMethod("get" + Name);
+                Object value = method.invoke(obj);
+                Value = (String) value;
+
+            } catch (SecurityException | NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+                Log.e(TAG, "Firebase Invoke Error :" + e.getMessage(), e);
+            }
+            return Value;
+        }
+
+        private void setbyName(Favorites obj, String Name, String Value) {
+            try {
+                Class[] cArg = new Class[1];
+                cArg[0] = String.class;
+                Method method = getClass().getDeclaredMethod("set" + Name, cArg);
+                method.invoke(obj, Value);
+            } catch (SecurityException | NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+                Log.e(TAG, "Firebase Invoke Error :" + e.getMessage(), e);
             }
         }
 

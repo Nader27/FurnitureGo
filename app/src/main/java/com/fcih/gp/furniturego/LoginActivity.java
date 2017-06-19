@@ -43,6 +43,7 @@ import com.google.firebase.auth.TwitterAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.Twitter;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
@@ -76,12 +77,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     //Facebook
     private CallbackManager callbackManager;
+    private LoginButton facebookbtn;
     //Google
     private GoogleApiClient mGoogleApiClient;
     //Twitter
     private TwitterLoginButton twitterbtn;
     //FireBase
     private FirebaseAuth mAuth;
+
 
 
     /**
@@ -184,6 +187,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         mAuth = FirebaseAuth.getInstance();
         //endregion
 
+        Twitter.initialize(LoginActivity.this);
+        twitterbtn = new TwitterLoginButton(LoginActivity.this);
+        callbackManager = CallbackManager.Factory.create();
 
         GoogleLogin();
     }
@@ -209,7 +215,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 EmailRegister();
                 break;
             case R.id.facebook:
-                LoginButton facebookbtn = new LoginButton(LoginActivity.this);
+                facebookbtn = new LoginButton(LoginActivity.this);
                 FacebookLogin(facebookbtn);
                 showProgress(true);
                 facebookbtn.performClick();
@@ -220,7 +226,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 startActivityForResult(signInIntent, RC_SIGN_IN);
                 break;
             case R.id.twitter:
-                twitterbtn = new TwitterLoginButton(LoginActivity.this);
                 TwitterLogin(twitterbtn);
                 showProgress(true);
                 twitterbtn.performClick();
@@ -275,7 +280,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
     private void FacebookLogin(LoginButton fbLoginButton) {
-        callbackManager = CallbackManager.Factory.create();
         fbLoginButton.setReadPermissions("email", "public_profile");
         fbLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
