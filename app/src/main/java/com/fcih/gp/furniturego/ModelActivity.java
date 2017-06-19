@@ -49,46 +49,50 @@ public class ModelActivity extends AppCompatActivity {
         showProgress(true);
         String Key = getIntent().getStringExtra(OBJECT_KEY);
 
-        new FireBaseHelper.Objects().Findbykey(Key, Data -> {
-            TextView mNameView = (TextView) findViewById(R.id.Name_TextView);
-            TextView mCompanyView = (TextView) findViewById(R.id.Company_TextView);
-            final TextView mSizeView = (TextView) findViewById(R.id.Size_TextView);
-            ImageView mimageView = (ImageView) findViewById(R.id.model_imageView);
-            CollapsingToolbarLayout mTitleBarView = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
-            Picasso.with(getApplicationContext()).load(Data.image_path).resize(75, 75).into(mimageView);
-            mCompanyView.setText(Data.companies.name);
-            mNameView.setText(Data.name);
-            mTitleBarView.setTitle(Data.name);
-            StorageReference storageRef = storage.getReference();
-            final StorageReference forestRef = storageRef.child(Data.model_path);
-            forestRef.getMetadata().addOnCompleteListener(task -> {
-                if(task.isSuccessful()) {
-                    double kb = (double) task.getResult().getSizeBytes() / 1024;
-                    double mb = kb / 1024;
-                    mSizeView.setText(String.format(Locale.ENGLISH, "%.2f", mb));
-                }else {
-                    Toast.makeText(getApplicationContext(),"Error Retrieving the item",Toast.LENGTH_LONG).show();
-                    fab.setEnabled(false);
-                }
-                showProgress(false);
-            });
-            fab.setOnClickListener(view -> {
-                try {
-                    File Dir = new File(Environment.getExternalStorageDirectory(), "/FurnitureGo/");
-                    if (!Dir.exists())
-                        Dir.mkdir();
-                    File localFile = File.createTempFile(Data.Key, ".obj", Dir);
-                    forestRef.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
-                        // Local temp file has been created
-                        Toast.makeText(getApplicationContext(), "Download Complete", Toast.LENGTH_LONG).show();
-                    });
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        new FireBaseHelper.Objects().Findbykey(Key, new FireBaseHelper.OnGetDataListener<FireBaseHelper.Objects>() {
+            @Override
+            public void onSuccess(FireBaseHelper.Objects Data) {
+                TextView mNameView = (TextView) ModelActivity.this.findViewById(R.id.Name_TextView);
+                TextView mCompanyView = (TextView) ModelActivity.this.findViewById(R.id.Company_TextView);
+                final TextView mSizeView = (TextView) ModelActivity.this.findViewById(R.id.Size_TextView);
+                ImageView mimageView = (ImageView) ModelActivity.this.findViewById(R.id.model_imageView);
+                CollapsingToolbarLayout mTitleBarView = (CollapsingToolbarLayout) ModelActivity.this.findViewById(R.id.toolbar_layout);
+                Picasso.with(ModelActivity.this.getApplicationContext()).load(Data.image_path).resize(75, 75).into(mimageView);
+                mCompanyView.setText(Data.companies.name);
+                mNameView.setText(Data.name);
+                mTitleBarView.setTitle(Data.name);
+                //StorageReference storageRef = storage.getReference();
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                final StorageReference forestRef = storage.getReferenceFromUrl(Data.model_path);
+                forestRef.getMetadata().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            double kb = (double) task.getResult().getSizeBytes() / 1024;
+                            double mb = kb / 1024;
+                            mSizeView.setText(String.format(Locale.ENGLISH, "%.2f", mb));
+                        } else {
+                            Toast.makeText(ModelActivity.this.getApplicationContext(), task.getException().toString(), Toast.LENGTH_LONG).show();
+                            fab.setEnabled(false);
+                        }
+                    ModelActivity.this.showProgress(false);
+                });
+                fab.setOnClickListener(view -> {
+                    try {
+                        File Dir = new File(Environment.getExternalStorageDirectory(), "/FurnitureGo/");
+                        if (!Dir.exists())
+                            Dir.mkdir();
+                        File localFile = File.createTempFile(Data.Key, ".obj", Dir);
+                        forestRef.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
+                            // Local temp file has been created
+                            Toast.makeText(ModelActivity.this.getApplicationContext(), "Download Complete", Toast.LENGTH_LONG).show();
+                        });
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
-            });
+                });
 
 
+            }
         });
     }
 

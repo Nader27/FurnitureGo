@@ -26,6 +26,12 @@ import android.widget.TextView;
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 public class BaseActivity extends AppCompatActivity
@@ -52,9 +58,7 @@ public class BaseActivity extends AppCompatActivity
             } else {
                 // User is signed out
                 Log.d(TAG, "onAuthStateChanged:signed_out");
-                Intent intent = new Intent(BaseActivity.this, LoginActivity.class);
-                intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+                startActivity(new Intent(BaseActivity.this, LoginActivity.class));
                 finish();
             }
             // ...
@@ -72,7 +76,6 @@ public class BaseActivity extends AppCompatActivity
             navigationView = (NavigationView) findViewById(R.id.nav_view);
             navigationView.setNavigationItemSelectedListener(this);
             onNavigationItemSelected(navigationView.getMenu().getItem(0));
-
         }
 
     }
@@ -205,7 +208,7 @@ public class BaseActivity extends AppCompatActivity
         } else if (id == R.id.nav_models) {
 
         } else if (id == R.id.nav_whishlist) {
-
+            fragmentClass = FavFragment.class;
         } else if (id == R.id.nav_settings) {
 
         } else if (id == R.id.nav_logout) {
