@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -47,7 +46,7 @@ public class FavFragment extends Fragment {
     public FavFragment() {
     }
 
-    public static FavFragment newInstance(String category) {
+    public static FavFragment newInstance() {
         FavFragment fragment = new FavFragment();
         return fragment;
     }
