@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -196,7 +197,11 @@ public class BaseActivity extends AppCompatActivity
             HomeFragment home = HomeFragment.newInstance();
             getSupportFragmentManager().beginTransaction().replace(R.id.flContent, home).commit();
         } else if (id == R.id.nav_camera) {
-            startActivity(new Intent(BaseActivity.this, AutoHdSampleCamActivity.class));
+            if (getCamera2Enabled() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                startActivity(new Intent(BaseActivity.this, SampleCam2Activity.class));
+            } else {
+                startActivity(new Intent(BaseActivity.this, AutoHdSampleCamActivity.class));
+            }
         } else if (id == R.id.nav_account) {
             ProfileFragment profile = ProfileFragment.newInstance();
             getSupportFragmentManager().beginTransaction().replace(R.id.flContent, profile).commit();
