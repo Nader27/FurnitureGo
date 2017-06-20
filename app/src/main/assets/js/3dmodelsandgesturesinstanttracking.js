@@ -7,6 +7,7 @@ var scaleValues = [];
 var allCurrentModels = [];
 var allModelImgSources = ["assets/buttons/clock.png","assets/buttons/couch.png","assets/buttons/office_chair.png","assets/buttons/table.png","assets/buttons/trainer.png"] ;
 
+var deleteObjBtnPos;
 
 var oneFingerGestureAllowed = false;
 
