@@ -71,18 +71,20 @@
         <activity
             android:name=".AutoHdSampleCamActivity"
             android:configChanges="orientation|keyboardHidden|screenSize">
+        </activity>
+
+        <!-- App activities -->
+        <activity android:name=".Splashscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- App activities -->
         <activity
             android:name=".BaseActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <activity
             android:name="com.facebook.CustomTabActivity"
@@ -100,13 +102,7 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/app_name"
-            android:noHistory="true"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <meta-data
@@ -124,4 +120,5 @@
         </activity>
 
     </application>
+
 </manifest>

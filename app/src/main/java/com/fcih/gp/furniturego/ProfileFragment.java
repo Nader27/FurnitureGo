@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -25,6 +29,8 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.Picasso;
+
+import java.io.File;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -44,8 +50,12 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     public ProfileFragment() {
         mAuth = FirebaseAuth.getInstance();
-        activity = (BaseActivity) getActivity();
         // Required empty public constructor
+    }
+
+    public static ProfileFragment newInstance() {
+        ProfileFragment fragment = new ProfileFragment();
+        return fragment;
     }
 
     @Override
@@ -53,6 +63,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        activity = (BaseActivity) getActivity();
         mNameview = (TextView) view.findViewById(R.id.nameedit);
         mNameview.setText(mAuth.getCurrentUser().getDisplayName());
         imageView = (RoundedImageView) view.findViewById(R.id.userimage);
@@ -107,24 +118,43 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             case R.id.savetext:
                 //region Save
                 if (profilechange) {
-                    Uri file = Uri.parse(picturePath);
+                    Uri file = Uri.fromFile(new File(picturePath));
                     StorageReference riversRef = storageRef.child("ProfileImage/" + file.getLastPathSegment());
                     UploadTask uploadTask = riversRef.putFile(file);
-                    uploadTask.addOnSuccessListener(taskSnapshot -> {
-                        @SuppressWarnings("VisibleForTests") final Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                .setDisplayName(mNameview.getText().toString())
-                                .setPhotoUri(downloadUrl)
-                                .build();
-                        FirebaseUser user = mAuth.getCurrentUser();
-                        user.updateProfile(profileUpdates);
-                        FireBaseHelper.Users USER = new FireBaseHelper.Users();
-                        USER.Findbykey(user.getUid(), Data -> {
-                            Data.name = mNameview.getText().toString();
-                            Data.image_uri = downloadUrl.toString();
-                            Data.Update(Data.Key);
-                            activity.onNavigationItemSelected(activity.navigationView.getMenu().getItem(0));
-                        });
+                    uploadTask.addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+                    uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                            try {
+
+                                if (task.isSuccessful()) {
+                                    @SuppressWarnings("VisibleForTests") final Uri downloadUrl = task.getResult().getDownloadUrl();
+                                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                            .setDisplayName(mNameview.getText().toString())
+                                            .setPhotoUri(downloadUrl)
+                                            .build();
+                                    FirebaseUser user = mAuth.getCurrentUser();
+                                    user.updateProfile(profileUpdates);
+                                    FireBaseHelper.Users USER = new FireBaseHelper.Users();
+                                    USER.Findbykey(user.getUid(), Data -> {
+                                        Data.name = mNameview.getText().toString();
+                                        Data.image_uri = downloadUrl.toString();
+                                        Data.Update(Data.Key);
+                                        activity.onNavigationItemSelected(activity.navigationView.getMenu().getItem(0));
+                                    });
+                                }
+                            } catch (Exception e) {
+                                Toast.makeText(ProfileFragment.this.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                    /*} else {
+                            Toast.makeText(getContext(),task.getException().getMessage(),Toast.LENGTH_LONG).show();
+                        }*/
+                        }
                     });
                 } else {
                     UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()

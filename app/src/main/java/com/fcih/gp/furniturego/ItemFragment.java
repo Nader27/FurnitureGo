@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
@@ -68,16 +69,72 @@ public class ItemFragment extends Fragment {
         if (view instanceof RecyclerView) {
             mViewPager = (ViewPager) getActivity().findViewById(R.id.container);
             mProgressView = (ProgressBar) getActivity().findViewById(R.id.progress);
+            FirebaseAuth mAuth = FirebaseAuth.getInstance();
             final Context context = view.getContext();
             recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
             Query query = FireBaseHelper.Objects.Ref.orderByChild(FireBaseHelper.Objects.Table.Category.text).equalTo(CategoryKEY);
-            showProgress(true);
+            //showProgress(true);
             new FireBaseHelper.Objects().Where(FireBaseHelper.Objects.Table.Category, CategoryKEY, Data -> {
-                if (Data.size() == 0) {
-                    showProgress(false);
+                if (Data.size() < 1) {
+                    //showProgress(false);
                 } else {
-                    mAdapter = new FirebaseRecyclerAdapter<FireBaseHelper.Objects, viewholder>(
+                    RecyclerView.Adapter<viewholder> Adapter = new RecyclerView.Adapter<viewholder>() {
+                        @Override
+                        public viewholder onCreateViewHolder(ViewGroup parent, int viewType) {
+                            View itemView = LayoutInflater.from(parent.getContext())
+                                    .inflate(R.layout.fragment_item, parent, false);
+
+                            return new viewholder(itemView);
+                        }
+
+                        @Override
+                        public void onBindViewHolder(viewholder holder, int position) {
+                            FireBaseHelper.Objects date = Data.get(position);
+                            holder.mTitleView.setText(date.name);
+                            holder.mCompanyView.setText(date.companies.name);
+                            holder.mRateView.setText(getRate(date.feedbacks));
+                            Picasso.with(getContext()).load(date.image_path).into(holder.mImageView);
+                            holder.mView.setOnClickListener(v -> {
+                                Intent intent = new Intent(getActivity(), ModelActivity.class);
+                                intent.putExtra(OBJECT_KEY, date.Key);
+                                startActivity(intent);
+                            });
+                            holder.mImageButton.setOnClickListener(v -> {
+                                PopupMenu popup = new PopupMenu(context, holder.mImageButton);
+                                MenuInflater inflater1 = popup.getMenuInflater();
+                                inflater1.inflate(R.menu.pop_menu, popup.getMenu());
+                                popup.setOnMenuItemClickListener(item -> {
+                                    int id = item.getItemId();
+                                    if (id == R.id.item_download) {
+
+                                    } else if (id == R.id.item_favorite) {
+                                        FireBaseHelper.Favorites favorites = new FireBaseHelper.Favorites();
+                                        favorites.user_id = mAuth.getCurrentUser().getUid();
+                                        favorites.object_id = date.Key;
+                                        favorites.Add(date.Key+mAuth.getCurrentUser().getUid());
+                                    } else if (id == R.id.item_delete) {
+
+                                    }
+                                    return true;
+                                });
+                                popup.show();
+                            });
+                            if (Data.size() - 1 == position) {
+                                //showProgress(false);
+                            }
+
+                        }
+
+                        @Override
+                        public int getItemCount() {
+                            return Data.size();
+                        }
+                    };
+
+                    //region old
+
+                   /* mAdapter = new FirebaseRecyclerAdapter<FireBaseHelper.Objects, viewholder>(
                             FireBaseHelper.Objects.class, R.layout.fragment_item, viewholder.class, query) {
                         @Override
                         protected void populateViewHolder(viewholder viewHolder, FireBaseHelper.Objects model, int position) {
@@ -92,7 +149,7 @@ public class ItemFragment extends Fragment {
                                     startActivity(intent);
                                 });
                                 viewHolder.mImageButton.setOnClickListener(v -> {
-                                    PopupMenu popup = new PopupMenu(context,viewHolder.mImageButton);
+                                    PopupMenu popup = new PopupMenu(context, viewHolder.mImageButton);
                                     MenuInflater inflater1 = popup.getMenuInflater();
                                     inflater1.inflate(R.menu.pop_menu, popup.getMenu());
                                     popup.setOnMenuItemClickListener(item -> {
@@ -114,7 +171,9 @@ public class ItemFragment extends Fragment {
                             });
                         }
                     };
-                    recyclerView.setAdapter(mAdapter);
+                    */
+                    //endregion
+                    recyclerView.setAdapter(Adapter);
                 }
             });
 

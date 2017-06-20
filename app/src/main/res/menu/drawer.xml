@@ -7,6 +7,10 @@
             android:icon="@drawable/ic_home"
             android:title="Home" />
         <item
+            android:id="@+id/nav_camera"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Start Design" />
+        <item
             android:id="@+id/nav_account"
             android:icon="@drawable/ic_account"
             android:title="My Account" />
@@ -22,15 +26,9 @@
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_settings"
             android:title="Settings" />
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_logout"
+            android:title="Logout" />
     </group>
-
-    <item android:title="Account">
-        <menu>
-            <item
-                android:id="@+id/nav_logout"
-                android:icon="@drawable/ic_logout"
-                android:title="Logout"/>
-        </menu>
-    </item>
-
 </menu>
