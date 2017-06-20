@@ -197,7 +197,7 @@ public class BaseActivity extends AppCompatActivity
             HomeFragment home = HomeFragment.newInstance();
             getSupportFragmentManager().beginTransaction().replace(R.id.flContent, home).commit();
         } else if (id == R.id.nav_camera) {
-            if (getCamera2Enabled() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                 startActivity(new Intent(BaseActivity.this, SampleCam2Activity.class));
             } else {
                 startActivity(new Intent(BaseActivity.this, AutoHdSampleCamActivity.class));
