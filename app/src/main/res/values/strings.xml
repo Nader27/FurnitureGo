@@ -80,4 +80,5 @@
     <string name="save">Save</string>
     <string name="enter_your_email">Enter Your Email</string>
     <string name="browse">Browse</string>
+    <string name="empty_category">No Items In This Category</string>
 </resources>

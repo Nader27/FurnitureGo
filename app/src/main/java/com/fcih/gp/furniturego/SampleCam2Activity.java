@@ -10,11 +10,6 @@ import com.wikitude.architect.services.camera.CameraLifecycleListener;
 
 public class SampleCam2Activity extends AutoHdSampleCamActivity {
 
-    @Override
-    protected boolean getCamera2Enabled() {
-        return getIntent().getBooleanExtra("enableCamera2", true);
-    }
-
     private CameraLifecycleListener cameraLifecycleListener = new CameraLifecycleListener() {
         @Override
         public void onCameraOpen() {
@@ -31,7 +26,7 @@ public class SampleCam2Activity extends AutoHdSampleCamActivity {
             /*
                 This is a workaround for some devices whose camera2 implementation is not working as expected.
             */
-            if (getCamera2Enabled() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                 AlertDialog alertDialog = new AlertDialog.Builder(SampleCam2Activity.this).create();
                 alertDialog.setTitle("Camera2 issue.");
                 alertDialog.setMessage("There was an unexpected issue with this devices camera2. Should this activity be recreated with the old camera api?");
