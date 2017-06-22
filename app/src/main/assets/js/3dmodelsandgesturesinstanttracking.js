@@ -3,7 +3,7 @@ var defaultRotationValue = 0;
 
 var rotationValues = [];
 var scaleValues = [];
-var oldscale;
+var oldscale:{x:0,y:0,z:0};
 var allCurrentModels = [];
 var allModelImgSources = [];
 
@@ -195,7 +195,7 @@ var World = {
                         },
                         onDragEnded: function (x, y) {
                             if (deleteObj == true) {
-                                World.instantTrackable.drawables.removeCamDrawable(this.model);
+                                removeModel(this);
                             }
                             $("#tracking-start-stop-button").attr('src', 'assets/buttons/stop.png');
                             // react to the drag gesture ending
@@ -244,6 +244,10 @@ var World = {
         }
         ,
 
+        removeModel: function removeModelFn(model) {
+            this.instantTrackable.drawables.removeCamDrawable(model);
+        }
+        ,
         resetModels: function resetModelsFn() {
             if (confirm('Are you sure you want to Delete All Models?')) {
                 for (var i = 0; i < allCurrentModels.length; i++) {
