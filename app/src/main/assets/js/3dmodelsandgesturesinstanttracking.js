@@ -9,7 +9,7 @@ var oldscalez;
 var allCurrentModels = [];
 var allModelImgSources = [];
 
-var deleteObj;
+var deleteObj = false;
 
 var oneFingerGestureAllowed = false;
 
@@ -182,16 +182,19 @@ var World = {
                                 //alert(event.type);
                                 //touch = event.originalEvent.changedTouches[0];
                                 if (Touchposition.pageX > off.left && Touchposition.pageX < right && Touchposition.pageY > off.top && Touchposition.pageY < bottom) {
-                                    deleteObj = true;
-                                    oldscalex = this.scale.x;
-                                    oldscaley = this.scale.y;
-                                    oldscalez = this.scale.z;
-                                    $("#textt").html("x =" + oldscalex + " y =" + oldscaley + " z = " + oldscalez);
-                                    this.scale = {x: 0.01, y: 0.01, z: 0.01};
+                                    if (deleteObj == false) {
+                                        deleteObj = true;
+                                        oldscalex = this.scale.x;
+                                        oldscaley = this.scale.y;
+                                        oldscalez = this.scale.z;
+                                        $(this.scale).animate({x: 0.01, y: 0.01, z: 0.01});
+                                        //this.scale = {x: 0.01, y: 0.01, z: 0.01};
+                                    }
                                 } else {
                                     if (deleteObj == true) {
                                         deleteObj = false;
-                                        this.scale = {x: oldscalex, y: oldscaley, z: oldscalez};
+                                        //this.scale = {x: oldscalex, y: oldscaley, z: oldscalez};
+                                        $(this.scale).animate({x: oldscalex, y: oldscaley, z: oldscalez});
                                     }
                                 }
 
