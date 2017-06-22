@@ -172,6 +172,7 @@ var World = {
                                 // call to native, which can potentially lead to performance
                                 // issues on older devices. The same applied to the rotate and
                                 // scale property
+                                this.translate = {x: intersectionX, y: intersectionY};
                                 var off = $("#tracking-start-stop-button").offset();
                                 var wid = $("#tracking-start-stop-button").width();
                                 var heig = $("#tracking-start-stop-button").height();
@@ -182,19 +183,19 @@ var World = {
                                 if (Touchposition.pageX > off.left && Touchposition.pageX < right && Touchposition.pageY > off.top && Touchposition.pageY < bottom) {
                                     deleteObj = true;
                                     oldscale = this.scale;
-                                    this.scale = {x: 0.001, y: 0.001, z: 0.001};
+                                    this.scale = {x: 0.01, y: 0.01, z: 0.01};
                                 } else {
                                     if (deleteObj == true) {
                                         deleteObj = false;
                                         this.scale = oldscale;
                                     }
                                 }
-                                this.translate = {x: intersectionX, y: intersectionY};
+
                             }
                         },
                         onDragEnded: function (x, y) {
                             if (deleteObj == true) {
-                                World.instantTrackable.drawables.removeCamDrawable(this);
+                                World.instantTrackable.drawables.removeCamDrawable(this.model);
                             }
                             $("#tracking-start-stop-button").attr('src', 'assets/buttons/stop.png');
                             // react to the drag gesture ending
