@@ -35,11 +35,12 @@ public class ModelFragment extends Fragment {
     private static final String TAG = "ModelActivity";
     private static final String OBJECT_KEY = "KEY";
     private String ObjectKey;
-    private FirebaseStorage storage = FirebaseStorage.getInstance();
+    private FirebaseStorage storage;
     private LinearLayout mLinearLayout;
     private ProgressBar mProgressView;
     private AppBarLayout mAppBarView;
     private FloatingActionButton fab;
+    private BaseActivity activity;
 
     public ModelFragment() {
         // Required empty public constructor
@@ -57,6 +58,7 @@ public class ModelFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ObjectKey = getArguments().getString(OBJECT_KEY);
+        activity = (BaseActivity) getActivity();
     }
 
     public void showProgress(final boolean show) {
@@ -97,27 +99,29 @@ public class ModelFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        View view = inflater.inflate(R.layout.fragment_model, container, false);
         mProgressView = (ProgressBar) view.findViewById(R.id.progress);
         mLinearLayout = (LinearLayout) view.findViewById(R.id.container);
         mAppBarView = (AppBarLayout) view.findViewById(R.id.app_bar);
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
-        getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
+        activity.getSupportActionBar().hide();
+        activity.findViewById(R.id.tabs).setVisibility(View.GONE);
+        storage = FirebaseStorage.getInstance();
         showProgress(true);
         new FireBaseHelper.Objects().Findbykey(ObjectKey, Data -> {
-            TextView mNameView = (TextView) getActivity().findViewById(R.id.Name_TextView);
-            TextView mCompanyView = (TextView) getActivity().findViewById(R.id.Company_TextView);
-            final TextView mSizeView = (TextView) getActivity().findViewById(R.id.Size_TextView);
-            ImageView mimageView = (ImageView) getActivity().findViewById(R.id.model_imageView);
-            CollapsingToolbarLayout mTitleBarView = (CollapsingToolbarLayout) getActivity().findViewById(R.id.toolbar_layout);
-            Picasso.with(getActivity().getApplicationContext()).load(Data.image_path).resize(75, 75).into(mimageView);
+            TextView mNameView = (TextView) activity.findViewById(R.id.Name_TextView);
+            TextView mCompanyView = (TextView) activity.findViewById(R.id.Company_TextView);
+            final TextView mSizeView = (TextView) activity.findViewById(R.id.Size_TextView);
+            ImageView mimageView = (ImageView) activity.findViewById(R.id.model_imageView);
+            CollapsingToolbarLayout mTitleBarView = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+            Picasso.with(activity.getApplicationContext()).load(Data.image_path).resize(75, 75).into(mimageView);
             mCompanyView.setText(Data.companies.name);
             mNameView.setText(Data.name);
             mTitleBarView.setTitle(Data.name);
-            //StorageReference storageRef = storage.getReference();
             FirebaseStorage storage = FirebaseStorage.getInstance();
-            final StorageReference forestRef = storage.getReferenceFromUrl(Data.model_path);
-            forestRef.getMetadata().addOnCompleteListener(task -> {
+            final StorageReference modelRef = storage.getReferenceFromUrl(Data.model_path);
+            final StorageReference imageRef = storage.getReferenceFromUrl(Data.image_path);
+            modelRef.getMetadata().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     double kb = (double) task.getResult().getSizeBytes() / 1024;
                     double mb = kb / 1024;
@@ -130,13 +134,17 @@ public class ModelFragment extends Fragment {
             });
             fab.setOnClickListener(v -> {
                 try {
-                    File Dir = new File(Environment.getExternalStorageDirectory(), "/FurnitureGo/");
+                    File Dir = new File(Environment.getExternalStorageDirectory(), File.separator + "FurnitureGo" + File.separator + Data.name);
                     if (!Dir.exists())
                         Dir.mkdir();
-                    File localFile = File.createTempFile(Data.Key, ".obj", Dir);
-                    forestRef.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
+                    File modelFile = File.createTempFile(Data.name, ".wt3", Dir);
+                    File imageFile = File.createTempFile(Data.name, ".png", Dir);
+                    modelRef.getFile(modelFile).addOnSuccessListener(taskSnapshot -> {
                         // Local temp file has been created
-                        Toast.makeText(getContext(), "Download Complete", Toast.LENGTH_LONG).show();
+                        imageRef.getFile(imageFile).addOnSuccessListener(taskSnapshot1 -> {
+                            // Local temp file has been created
+                            Toast.makeText(getContext(), "Download Complete", Toast.LENGTH_LONG).show();
+                        });
                     });
                 } catch (IOException e) {
                     e.printStackTrace();

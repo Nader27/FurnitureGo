@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -14,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -36,8 +34,6 @@ public class ItemFragment extends Fragment {
     private static final String OBJECT_KEY = "KEY";
     private static final String OBJECT_NAME = "NAME";
     private String CategoryKEY;
-    private ViewPager mViewPager;
-    private ProgressBar mProgressView;
     private FirebaseRecyclerAdapter<FireBaseHelper.Objects, viewholder> mAdapter = null;
     private RecyclerView recyclerView;
     private String CategoryNAME;
@@ -70,23 +66,21 @@ public class ItemFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item_list, container, false);
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            mViewPager = (ViewPager) getActivity().findViewById(R.id.container);
-            mProgressView = (ProgressBar) getActivity().findViewById(R.id.progress);
-            FirebaseAuth mAuth = FirebaseAuth.getInstance();
-            final Context context = view.getContext();
-            recyclerView = (RecyclerView) view;
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            Query query = FireBaseHelper.Objects.Ref.orderByChild(FireBaseHelper.Objects.Table.Category.text).equalTo(CategoryKEY);
-            ProgressDialog progressDialog = new ProgressDialog(getContext());
-            progressDialog.setTitle("Loading");
-            progressDialog.setMessage("Loading Category : " + CategoryNAME);
-            progressDialog.show();
-            new FireBaseHelper.Objects().Where(FireBaseHelper.Objects.Table.Category, CategoryKEY, Data -> {
-                if (Data.size() < 1) {
-                    progressDialog.dismiss();
-                } else {
-                    //region noadapter
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        final Context context = view.getContext();
+        recyclerView = (RecyclerView) view.findViewById(R.id.list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        Query query = FireBaseHelper.Objects.Ref.orderByChild(FireBaseHelper.Objects.Table.Category.text).equalTo(CategoryKEY);
+        ProgressDialog progressDialog = new ProgressDialog(getContext());
+        progressDialog.setTitle("Loading");
+        progressDialog.setMessage("Loading Category : " + CategoryNAME);
+        progressDialog.show();
+        new FireBaseHelper.Objects().Where(FireBaseHelper.Objects.Table.Category, CategoryKEY, Data -> {
+            if (Data.size() < 1) {
+                progressDialog.dismiss();
+                view.findViewById(R.id.emptycategory).setVisibility(View.VISIBLE);
+            } else {
+                //region noadapter
                    /* RecyclerView.Adapter<viewholder> Adapter = new RecyclerView.Adapter<viewholder>() {
                         @Override
                         public viewholder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -139,55 +133,63 @@ public class ItemFragment extends Fragment {
                             return Data.size();
                         }
                     };*/
-                    //endregion
-
-                    //region old
-
-                    mAdapter = new FirebaseRecyclerAdapter<FireBaseHelper.Objects, viewholder>(
-                            FireBaseHelper.Objects.class, R.layout.fragment_item, viewholder.class, query) {
-                        @Override
-                        protected void populateViewHolder(viewholder viewHolder, FireBaseHelper.Objects model, int position) {
-                            model.Findbykey(mAdapter.getRef(position).getKey(), Data -> {
-                                viewHolder.mTitleView.setText(Data.name);
-                                viewHolder.mCompanyView.setText(Data.companies.name);
-                                viewHolder.mRateView.setText(getRate(Data.feedbacks));
-                                Picasso.with(getContext()).load(Data.image_path).into(viewHolder.mImageView);
-                                viewHolder.mView.setOnClickListener(v -> {
-                                    ModelFragment mod = ModelFragment.newInstance(Data.Key);
-                                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.flContent, mod).commit();
-                                });
-                                viewHolder.mImageButton.setOnClickListener(v -> {
-                                    PopupMenu popup = new PopupMenu(context, viewHolder.mImageButton);
-                                    MenuInflater inflater1 = popup.getMenuInflater();
-                                    inflater1.inflate(R.menu.pop_menu, popup.getMenu());
-                                    popup.setOnMenuItemClickListener(item -> {
-                                        int id = item.getItemId();
-                                        if (id == R.id.item_download) {
-
-                                        } else if (id == R.id.item_favorite) {
+                //endregion
+                mAdapter = new FirebaseRecyclerAdapter<FireBaseHelper.Objects, viewholder>(
+                        FireBaseHelper.Objects.class, R.layout.fragment_item, viewholder.class, query) {
+                    @Override
+                    protected void populateViewHolder(viewholder viewHolder, FireBaseHelper.Objects model, int position) {
+                        model.Findbykey(mAdapter.getRef(position).getKey(), Data -> {
+                            viewHolder.mTitleView.setText(Data.name);
+                            viewHolder.mCompanyView.setText(Data.companies.name);
+                            viewHolder.mRateView.setText(getRate(Data.feedbacks));
+                            Picasso.with(getContext()).load(Data.image_path).into(viewHolder.mImageView);
+                            viewHolder.mView.setOnClickListener(v -> {
+                                ModelFragment mod = ModelFragment.newInstance(Data.Key);
+                                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.flContent, mod).addToBackStack(null).commit();
+                            });
+                            viewHolder.mImageButton.setOnClickListener(v -> {
+                                PopupMenu popup = new PopupMenu(context, viewHolder.mImageButton);
+                                MenuInflater inflater1 = popup.getMenuInflater();
+                                inflater1.inflate(R.menu.pop_menu, popup.getMenu());
+                                new FireBaseHelper.Favorites().Findbykey(Data.Key + mAuth.getCurrentUser().getUid(), Data1 -> {
+                                    if (Data1 == null) {
+                                        popup.getMenu().findItem(R.id.item_favorite).setOnMenuItemClickListener(menuItem -> {
                                             FireBaseHelper.Favorites favorites = new FireBaseHelper.Favorites();
                                             favorites.user_id = mAuth.getCurrentUser().getUid();
                                             favorites.object_id = Data.Key;
                                             favorites.Add(Data.Key + mAuth.getCurrentUser().getUid());
-                                        } else if (id == R.id.item_delete) {
+                                            return true;
+                                        });
 
-                                        }
-                                        return true;
-                                    });
-                                    popup.show();
+                                    } else {
+                                        popup.getMenu().findItem(R.id.item_favorite).setTitle("Remove From Favorite");
+                                        popup.getMenu().findItem(R.id.item_favorite).setOnMenuItemClickListener(menuItem -> {
+                                            Data1.Remove(Data.Key + mAuth.getCurrentUser().getUid());
+                                            return true;
+                                        });
+                                    }
                                 });
-                                if (mAdapter.getItemCount() - 1 == position) {
-                                    progressDialog.dismiss();
-                                }
-                            });
-                        }
-                    };
-                    //endregion
-                    recyclerView.setAdapter(mAdapter);
-                }
-            });
 
-        }
+                                popup.setOnMenuItemClickListener(item -> {
+                                    int id = item.getItemId();
+                                    if (id == R.id.item_download) {
+                                        //ToDo:Download
+                                    } else if (id == R.id.item_delete) {
+                                        //ToDo:Delete
+                                    }
+                                    return true;
+                                });
+                                popup.show();
+                            });
+                            if (mAdapter.getItemCount() - 1 == position) {
+                                progressDialog.dismiss();
+                            }
+                        });
+                    }
+                };
+                recyclerView.setAdapter(mAdapter);
+            }
+        });
         return view;
     }
 

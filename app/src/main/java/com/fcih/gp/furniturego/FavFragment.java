@@ -1,7 +1,7 @@
 package com.fcih.gp.furniturego;
 
+import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -54,6 +54,7 @@ public class FavFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        activity = (BaseActivity) getActivity();
     }
 
     @Override
@@ -61,83 +62,80 @@ public class FavFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item_list, container, false);
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            mView =  container;
-            FirebaseAuth mAuth = FirebaseAuth.getInstance();
-            mProgressView = (ProgressBar) getActivity().findViewById(R.id.progress);
-            final Context context = view.getContext();
-            activity = (BaseActivity) getActivity();
-            activity.findViewById(R.id.tabs).setVisibility(View.GONE);
-            recyclerView = (RecyclerView) view;
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            Query query = FireBaseHelper.Favorites.Ref.orderByChild(FireBaseHelper.Favorites.Table.User_id.text).equalTo(mAuth.getCurrentUser().getUid());
-            //showProgress(true);
-            new FireBaseHelper.Favorites().Where(FireBaseHelper.Favorites.Table.User_id,mAuth.getCurrentUser().getUid() , Data -> {
-                if (Data.size() == 0) {
-                    //showProgress(false);
-                } else {
-                    mAdapter = new FirebaseRecyclerAdapter<FireBaseHelper.Favorites, viewholder>(
-                            FireBaseHelper.Favorites.class, R.layout.fragment_item, viewholder.class, query) {
-                        @Override
-                        protected void populateViewHolder(viewholder viewHolder, FireBaseHelper.Favorites model, int position) {
-                            new FireBaseHelper.Objects().Findbykey(model.object_id, Data -> {
-                                viewHolder.mTitleView.setText(Data.name);
-                                viewHolder.mCompanyView.setText(Data.companies.name);
-                                viewHolder.mRateView.setText(getRate(Data.feedbacks));
-                                Picasso.with(getContext()).load(Data.image_path).into(viewHolder.mImageView);
-                                viewHolder.mView.setOnClickListener(v -> {
-                                    Intent intent = new Intent(getActivity(), ModelActivity.class);
-                                    intent.putExtra(OBJECT_KEY, Data.Key);
-                                    startActivity(intent);
-                                });
-                                viewHolder.mImageButton.setOnClickListener(v -> {
-                                    PopupMenu popup = new PopupMenu(context,viewHolder.mImageButton);
-                                    MenuInflater inflater1 = popup.getMenuInflater();
-                                    inflater1.inflate(R.menu.pop_menu, popup.getMenu());
-                                    popup.getMenu().findItem(R.id.item_favorite).setTitle("Remove From Favorite");
-                                    popup.setOnMenuItemClickListener(item -> {
-                                        int id = item.getItemId();
-                                        if (id == R.id.item_download) {
-                                            //ToDo:Download
-                                        }else if (id == R.id.item_favorite) {
-                                            mAdapter.getRef(position).removeValue();
-                                            viewHolder.mView.setVisibility(View.GONE);
-                                        }else if (id == R.id.item_delete) {
-                                        }
-                                        return true;
-                                    });
-                                    popup.show();
-                                });
-                                if (mAdapter.getItemCount() - 1 == position) {
-                                    //showProgress(false);
-                                }
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        final Context context = view.getContext();
+        activity.findViewById(R.id.tabs).setVisibility(View.GONE);
+        recyclerView = (RecyclerView) view.findViewById(R.id.list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        Query query = FireBaseHelper.Favorites.Ref.orderByChild(FireBaseHelper.Favorites.Table.User_id.text).equalTo(mAuth.getCurrentUser().getUid());
+        ProgressDialog progressDialog = new ProgressDialog(getContext());
+        progressDialog.setTitle("Loading");
+        progressDialog.setMessage("Loading WhishList");
+        progressDialog.show();
+        new FireBaseHelper.Favorites().Where(FireBaseHelper.Favorites.Table.User_id, mAuth.getCurrentUser().getUid(), Data -> {
+            if (Data.size() == 0) {
+                progressDialog.dismiss();
+                TextView textView = (TextView) view.findViewById(R.id.emptycategory);
+                textView.setText("Your Wish List Is Empty");
+                textView.setVisibility(View.VISIBLE);
+                //showProgress(false);
+            } else {
+                mAdapter = new FirebaseRecyclerAdapter<FireBaseHelper.Favorites, viewholder>(
+                        FireBaseHelper.Favorites.class, R.layout.fragment_item, viewholder.class, query) {
+                    @Override
+                    protected void populateViewHolder(viewholder viewHolder, FireBaseHelper.Favorites model, int position) {
+                        new FireBaseHelper.Objects().Findbykey(model.object_id, Data -> {
+                            viewHolder.mTitleView.setText(Data.name);
+                            viewHolder.mCompanyView.setText(Data.companies.name);
+                            viewHolder.mRateView.setText(getRate(Data.feedbacks));
+                            Picasso.with(getContext()).load(Data.image_path).into(viewHolder.mImageView);
+                            viewHolder.mView.setOnClickListener(v -> {
+                                ModelFragment mod = ModelFragment.newInstance(Data.Key);
+                                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.flContent, mod).addToBackStack(null).commit();
                             });
-                        }
-                    };
-                    recyclerView.setAdapter(mAdapter);
-                }
-            });
-
-        }
+                            viewHolder.mImageButton.setOnClickListener(v -> {
+                                PopupMenu popup = new PopupMenu(context, viewHolder.mImageButton);
+                                MenuInflater inflater1 = popup.getMenuInflater();
+                                inflater1.inflate(R.menu.pop_menu, popup.getMenu());
+                                popup.getMenu().findItem(R.id.item_favorite).setTitle("Remove From Favorite");
+                                popup.setOnMenuItemClickListener(item -> {
+                                    int id = item.getItemId();
+                                    if (id == R.id.item_download) {
+                                        //ToDo:Download
+                                    } else if (id == R.id.item_favorite) {
+                                        mAdapter.getRef(position).removeValue();
+                                        mAdapter.notifyDataSetChanged();
+                                    } else if (id == R.id.item_delete) {
+                                        //ToDo:Delete
+                                    }
+                                    return true;
+                                });
+                                popup.show();
+                            });
+                            if (mAdapter.getItemCount() - 1 == position) {
+                                progressDialog.dismiss();
+                            }
+                        });
+                    }
+                };
+                recyclerView.setAdapter(mAdapter);
+            }
+        });
         return view;
     }
 
     private String getRate(List<FireBaseHelper.Feedbacks> lst) {
 
-        int sum = 0;
+        if (lst.size() == 0) {
+            return "0.0";
+        } else {
+            int sum = 0;
 
-        for (FireBaseHelper.Feedbacks item : lst) {
-            sum += Integer.parseInt(item.rate);
+            for (FireBaseHelper.Feedbacks item : lst) {
+                sum += Integer.parseInt(item.rate);
+            }
+            return String.format(Locale.ENGLISH, "%.1f", (double) sum / lst.size());
         }
-        return String.format(Locale.ENGLISH, "%.1f", (double) sum / lst.size());
-    }
-
-    public void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        mView.setVisibility(show ? View.GONE : View.VISIBLE);
-        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     public static class viewholder extends RecyclerView.ViewHolder {
@@ -158,4 +156,6 @@ public class FavFragment extends Fragment {
             mImageButton = (ImageButton) view.findViewById(R.id.item_menu);
         }
     }
+
+
 }

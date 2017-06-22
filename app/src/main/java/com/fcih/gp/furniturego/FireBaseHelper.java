@@ -1904,20 +1904,24 @@ public class FireBaseHelper {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     //ex: final ClassName obj = new Teams();
                     final Favorites obj = new Favorites();
-                    obj.Key = dataSnapshot.getKey();
-                    for (Table T : Table.values()) {
-                        setbyName(obj, T.name(), dataSnapshot.child(T.text).getValue().toString());
-                    }
-                    //if no foreign key
-                    //listener.onSuccess(obj);
-                    //ex:
-                    objects.Findbykey(obj.object_id, Data -> {
-                        obj.objects = Data;
-                        users.Findbykey(obj.user_id, Data1 -> {
-                            obj.users = Data1;
-                            listener.onSuccess(obj);
+                    if (dataSnapshot.exists()) {
+                        obj.Key = dataSnapshot.getKey();
+                        for (Table T : Table.values()) {
+                            setbyName(obj, T.name(), dataSnapshot.child(T.text).getValue().toString());
+                        }
+                        //if no foreign key
+                        //listener.onSuccess(obj);
+                        //ex:
+                        objects.Findbykey(obj.object_id, Data -> {
+                            obj.objects = Data;
+                            users.Findbykey(obj.user_id, Data1 -> {
+                                obj.users = Data1;
+                                listener.onSuccess(obj);
+                            });
                         });
-                    });
+                    } else {
+                        listener.onSuccess(null);
+                    }
                 }
 
                 @Override

@@ -3,248 +3,274 @@ var defaultRotationValue = 0;
 
 var rotationValues = [];
 var scaleValues = [];
-
+var oldscale;
 var allCurrentModels = [];
-var allModelImgSources = ["assets/buttons/clock.png","assets/buttons/couch.png","assets/buttons/office_chair.png","assets/buttons/table.png","assets/buttons/trainer.png"] ;
+var allModelImgSources = [];
 
-var deleteObjBtnPos;
+var deleteObj;
 
 var oneFingerGestureAllowed = false;
 
 // this global callback can be utilized to react on the transition from and to 2
 // finger gestures; specifically, we disallow the drag gesture in this case to ensure an
 // intuitive experience
-AR.context.on2FingerGestureStarted = function() {
+AR.context.on2FingerGestureStarted = function () {
     oneFingerGestureAllowed = false;
 };
 
 var World = {
-    modelPaths: ["assets/models/clock.wt3", "assets/models/couch.wt3", "assets/models/officechair.wt3", "assets/models/table.wt3", "assets/models/trainer.wt3" ],
-    /*
-        requestedModel is the index of the next model to be created. This is necessary because we have to wait one frame in order to pass the correct initial position to the newly created model.
-        initialDrag is a boolean that serves the purpose of swiping the model into the scene. In the moment that the model is created, the drag event has already started and will not be caught by the model, so the motion has to be carried out by the tracking plane.
-        lastAddedModel always holds the newest model in allCurrentModels so that the plane knows which model to apply the motion to.
-    */
-    requestedModel: -1,
-    initialDrag: false,
-    lastAddedModel: null,
+        modelPaths: [],
+        /*
+         requestedModel is the index of the next model to be created. This is necessary because we have to wait one frame in order to pass the correct initial position to the newly created model.
+         initialDrag is a boolean that serves the purpose of swiping the model into the scene. In the moment that the model is created, the drag event has already started and will not be caught by the model, so the motion has to be carried out by the tracking plane.
+         lastAddedModel always holds the newest model in allCurrentModels so that the plane knows which model to apply the motion to.
+         */
+        requestedModel: -1,
+        initialDrag: false,
+        lastAddedModel: null,
 
-/*    init: function initFn() {
-        $("#inputs").empty();
-        for(var i=0;i<allModelImgSources.length;i++){
-            $("#inputs").append("<input data-id=" + i + " class='tracking-model-button list-group-item' type='image' src="+allModelImgSources[i]+" />");
-        }
-        $("#inputs").append("<input id='tracking-model-reset-button' class='tracking-model-button list-group-item' type='image' src='assets/buttons/trash.png' onclick='World.resetModels()' />");
+        /*    init: function initFn() {
+         $("#inputs").empty();
+         for(var i=0;i<allModelImgSources.length;i++){
+         $("#inputs").append("<input data-id=" + i + " class='tracking-model-button list-group-item' type='image' src="+allModelImgSources[i]+" />");
+         }
+         $("#inputs").append("<input id='tracking-model-reset-button' class='tracking-model-button list-group-item' type='image' src='assets/buttons/trash.png' onclick='World.resetModels()' />");
 
-        this.createOverlays();
-    },*/
+         this.createOverlays();
+         },*/
 
-    createOverlays: function createOverlaysFn() {
-        var crossHairsRedImage = new AR.ImageResource("assets/crosshairs_red.png");
-        var crossHairsRedDrawable = new AR.ImageDrawable(crossHairsRedImage, 1.0);
+        createOverlays: function createOverlaysFn() {
+            var crossHairsRedImage = new AR.ImageResource("assets/crosshairs_red.png");
+            var crossHairsRedDrawable = new AR.ImageDrawable(crossHairsRedImage, 1.0);
 
-        var crossHairsBlueImage = new AR.ImageResource("assets/crosshairs_blue.png");
-        var crossHairsBlueDrawable = new AR.ImageDrawable(crossHairsBlueImage, 1.0);
+            var crossHairsBlueImage = new AR.ImageResource("assets/crosshairs_blue.png");
+            var crossHairsBlueDrawable = new AR.ImageDrawable(crossHairsBlueImage, 1.0);
 
-        this.tracker = new AR.InstantTracker({
-            onChangedState:  function onChangedStateFn(state) {
-                // react to a change in tracking state here
-            },
-            deviceHeight: 1.0,
-            onError: function(errorMessage) {
-                alert(errorMessage);
-            }
-        });
-
-        this.instantTrackable = new AR.InstantTrackable(this.tracker, {
-            drawables: {
-                cam: crossHairsBlueDrawable,
-                initialization: crossHairsRedDrawable
-            },
-            onTrackingStarted: function onTrackingStartedFn() {
-                // do something when tracking is started (recognized)
-                 $("#tracking-start-stop-button").attr('src','assets/buttons/start.png');
-            },
-            onTrackingStopped: function onTrackingStoppedFn() {
-                // do something when tracking is stopped (lost)
-            },
-            onTrackingPlaneClick: function onTrackingPlaneClickFn(xPos, yPos) {
-                // react to a the tracking plane being clicked here
-            },
-            onTrackingPlaneDragBegan: function onTrackingPlaneDragBeganFn(xPos, yPos) {
-                oneFingerGestureAllowed = true;
-                $("#tracking-start-stop-button").attr('src','assets/buttons/deleteObj.png');
-                World.updatePlaneDrag(xPos, yPos);
-            },
-            onTrackingPlaneDragChanged: function onTrackingPlaneDragChangedFn(xPos, yPos) {
-                World.updatePlaneDrag(xPos, yPos);
-            },
-            onTrackingPlaneDragEnded: function onTrackingPlaneDragEndedFn(xPos, yPos) {
-                World.updatePlaneDrag(xPos, yPos);
-                if((yPos<-1.1&&yPos>-1.5)&&( (xPos<0.079&&xPos>0.0069) || (xPos>0.01&&xPos<0.09) )){
-                    //alert("here");
+            this.tracker = new AR.InstantTracker({
+                onChangedState: function onChangedStateFn(state) {
+                    // react to a change in tracking state here
+                },
+                deviceHeight: 1.0,
+                onError: function (errorMessage) {
+                    alert(errorMessage);
                 }
-                $("#tracking-start-stop-button").attr('src','assets/buttons/start.png');
-                World.initialDrag = false;
-            },
-            onError: function(errorMessage) {
-                alert(errorMessage);
-            }
-        });
+            });
 
-        World.setupEventListeners()
-    },
+            this.instantTrackable = new AR.InstantTrackable(this.tracker, {
+                drawables: {
+                    cam: crossHairsBlueDrawable,
+                    initialization: crossHairsRedDrawable
+                },
+                onTrackingStarted: function onTrackingStartedFn() {
+                    // do something when tracking is started (recognized)
+                },
+                onTrackingStopped: function onTrackingStoppedFn() {
+                    // do something when tracking is stopped (lost)
+                },
+                onTrackingPlaneClick: function onTrackingPlaneClickFn(xPos, yPos) {
+                    // react to a the tracking plane being clicked here
+                },
+                onTrackingPlaneDragBegan: function onTrackingPlaneDragBeganFn(xPos, yPos) {
+                    oneFingerGestureAllowed = true;
+                    World.updatePlaneDrag(xPos, yPos);
+                },
+                onTrackingPlaneDragChanged: function onTrackingPlaneDragChangedFn(xPos, yPos) {
+                    World.updatePlaneDrag(xPos, yPos);
+                },
+                onTrackingPlaneDragEnded: function onTrackingPlaneDragEndedFn(xPos, yPos) {
+                    World.updatePlaneDrag(xPos, yPos);
+                    World.initialDrag = false;
+                },
+                onError: function (errorMessage) {
+                    alert(errorMessage);
+                }
+            });
 
-    setupEventListeners: function setupEventListenersFn() {
+            World.setupEventListeners()
+        },
 
-            $('.tracking-model-button').on('touchstart',function(){
+        setupEventListeners: function setupEventListenersFn() {
+
+            $('.tracking-model-button').on('touchstart', function () {
                 World.requestedModel = $(this).data("id");
             });
-    },
+        },
 
-    updatePlaneDrag: function updatePlaneDragFn(xPos, yPos) {
-        if (World.requestedModel >= 0) {
-            World.addModel(World.requestedModel, xPos, yPos);
-            World.requestedModel = -1;
-            World.initialDrag = true;
-        }
-        //if(xPos==deleteObjBtnPos.left)
-// this.instantTrackable.drawables.removeCamDrawable(allCurrentModels[i]);
-        if (World.initialDrag && oneFingerGestureAllowed) {
-            lastAddedModel.translate = {x:xPos, y:yPos};
-        }
-    },
+        updatePlaneDrag: function updatePlaneDragFn(xPos, yPos) {
+            if (World.requestedModel >= 0) {
+                World.addModel(World.requestedModel, xPos, yPos);
+                World.requestedModel = -1;
+                World.initialDrag = true;
+            }
 
-    changeTrackerState: function changeTrackerStateFn() {
+            if (World.initialDrag && oneFingerGestureAllowed) {
+                lastAddedModel.translate = {x: xPos, y: yPos};
+            }
+        },
 
-        if (this.tracker.state === AR.InstantTrackerState.INITIALIZING) {
+        changeTrackerState: function changeTrackerStateFn() {
 
-            $("#sidebar").show();
-            document.getElementById("tracking-start-stop-button").src = "assets/buttons/stop.png";
-            document.getElementById("tracking-height-slider-container").style.visibility = "hidden";
+            if (this.tracker.state === AR.InstantTrackerState.INITIALIZING) {
 
-            this.tracker.state = AR.InstantTrackerState.TRACKING;
-        } else {
+                $("#sidebar").show();
+                document.getElementById("tracking-start-stop-button").src = "assets/buttons/stop.png";
+                document.getElementById("tracking-height-slider-container").style.visibility = "hidden";
 
-            $("#sidebar").hide();
-            document.getElementById("tracking-start-stop-button").src = "assets/buttons/start.png";
-            document.getElementById("tracking-height-slider-container").style.visibility = "visible";
+                this.tracker.state = AR.InstantTrackerState.TRACKING;
+            } else {
 
-            this.tracker.state = AR.InstantTrackerState.INITIALIZING;
-        }
-    },
+                $("#sidebar").hide();
+                document.getElementById("tracking-start-stop-button").src = "assets/buttons/start.png";
+                document.getElementById("tracking-height-slider-container").style.visibility = "visible";
 
-    changeTrackingHeight: function changeTrackingHeightFn(height) {
-        this.tracker.deviceHeight = parseFloat(height);
-    },
+                this.tracker.state = AR.InstantTrackerState.INITIALIZING;
+            }
+        },
 
-    addModel: function addModelFn(pathIndex, xpos, ypos) {
-        if (World.isTracking()) {
-            var modelIndex = rotationValues.length;
-            World.addModelValues();
+        changeTrackingHeight: function changeTrackingHeightFn(height) {
+            this.tracker.deviceHeight = parseFloat(height);
+        },
 
-            var model = new AR.Model(World.modelPaths[pathIndex], {
-                scale: {
-                    x: defaultScaleValue,
-                    y: defaultScaleValue,
-                    z: defaultScaleValue
-                },
-                translate: {
-                    x: xpos,
-                    y: ypos
-                },
-                // We recommend only implementing the callbacks actually needed as they will
-                // cause calls from native to JavaScript being invoked. Especially for the
-                // frequently called changed callbacks this should be avoided. In this
-                // sample all callbacks are implemented simply for demonstrative purposes.
-                onDragBegan: function(x, y) {
-                    oneFingerGestureAllowed = true;
-                },
-                onDragChanged: function(relativeX, relativeY, intersectionX, intersectionY) {
-                    if (oneFingerGestureAllowed) {
-                        // We recommend setting the entire translate property rather than
-                        // its individual components as the latter would cause several
-                        // call to native, which can potentially lead to performance
-                        // issues on older devices. The same applied to the rotate and
-                        // scale property
-                        this.translate = {x:intersectionX, y:intersectionY};
+        addModel: function addModelFn(pathIndex, xpos, ypos) {
+            if (World.isTracking()) {
+                var modelIndex = rotationValues.length;
+                World.addModelValues();
+
+                var model = new AR.Model(World.modelPaths[pathIndex], {
+                        scale: {
+                            x: defaultScaleValue,
+                            y: defaultScaleValue,
+                            z: defaultScaleValue
+                        },
+                        translate: {
+                            x: xpos,
+                            y: ypos
+                        },
+                        // We recommend only implementing the callbacks actually needed as they will
+                        // cause calls from native to JavaScript being invoked. Especially for the
+                        // frequently called changed callbacks this should be avoided. In this
+                        // sample all callbacks are implemented simply for demonstrative purposes.
+                        onDragBegan: function (x, y) {
+                            $("#tracking-start-stop-button").attr('src', 'assets/buttons/trash.png');
+                            oneFingerGestureAllowed = true;
+                        },
+                        onDragChanged: function (x,y,relativeX, relativeY, intersectionX, intersectionY) {
+                            if (oneFingerGestureAllowed) {
+                                // We recommend setting the entire translate property rather than
+                                // its individual components as the latter would cause several
+                                // call to native, which can potentially lead to performance
+                                // issues on older devices. The same applied to the rotate and
+                                // scale property
+                                var off = $("#tracking-start-stop-button").offset();
+                                var wid = $("#tracking-start-stop-button").width();
+                                var heig = $("#tracking-start-stop-button").height();
+                                var right = off.left + wid;
+                                var bottom = off.top + heig;
+                                //alert(event.type);
+                                //touch = event.originalEvent.changedTouches[0];
+
+
+                                $("#textt").html("x = "+x);
+                                if (relativeX > off.left && relativeX < right && relativeY > off.top && relativeY < bottom) {
+                                    deleteObj = true;
+                                    oldscale = this.scale;
+                                    this.scale = {x: 0.001, y: 0.001, z: 0.001};
+                                } else {
+                                    if (deleteObj == true) {
+                                        deleteObj = false;
+                                        this.scale = oldscale;
+                                    }
+                                }
+                                this.translate = {x: intersectionX, y: intersectionY};
+                            }
+                        },
+                        onDragEnded: function (x, y) {
+                            if (deleteObj == true) {
+                                World.instantTrackable.drawables.removeCamDrawable(this);
+                            }
+                            $("#tracking-start-stop-button").attr('src', 'assets/buttons/stop.png');
+                            // react to the drag gesture ending
+                        },
+                        onRotationBegan: function (angleInDegrees) {
+                            // react to the rotation gesture beginning
+                        }
+                        ,
+                        onRotationChanged: function (angleInDegrees) {
+                            this.rotate.z = rotationValues[modelIndex] - angleInDegrees;
+                        }
+                        ,
+                        onRotationEnded: function (angleInDegrees) {
+                            rotationValues[modelIndex] = this.rotate.z
+                        }
+                        ,
+                        onScaleBegan: function (scale) {
+                            // react to the scale gesture beginning
+                        }
+                        ,
+                        onScaleChanged: function (scale) {
+                            var scaleValue = scaleValues[modelIndex] * scale;
+                            this.scale = {x: scaleValue, y: scaleValue, z: scaleValue};
+                        }
+                        ,
+                        onScaleEnded: function (scale) {
+                            scaleValues[modelIndex] = this.scale.x;
+                        }
                     }
-                },
-                onDragEnded: function(x, y) {
-                    // react to the drag gesture ending
-                },
-                onRotationBegan: function(angleInDegrees) {
-                    // react to the rotation gesture beginning
-                },
-                onRotationChanged: function(angleInDegrees) {
-                    this.rotate.z = rotationValues[modelIndex] - angleInDegrees;
-                },
-                onRotationEnded: function(angleInDegrees) {
-                   rotationValues[modelIndex] = this.rotate.z
-                },
-                onScaleBegan: function(scale) {
-                    // react to the scale gesture beginning
-                },
-                onScaleChanged: function(scale) {
-                    var scaleValue = scaleValues[modelIndex] * scale;
-                    this.scale = {x: scaleValue, y: scaleValue, z: scaleValue};
-                },
-                onScaleEnded: function(scale) {
-                    scaleValues[modelIndex] = this.scale.x;
+                );
+
+                allCurrentModels.push(model);
+                lastAddedModel = model;
+                this.instantTrackable.drawables.addCamDrawable(model);
+            }
+        },
+
+        isTracking: function isTrackingFn() {
+            return (this.tracker.state === AR.InstantTrackerState.TRACKING);
+        }
+        ,
+
+        addModelValues: function addModelValuesFn() {
+            rotationValues.push(defaultRotationValue);
+            scaleValues.push(defaultScaleValue);
+        }
+        ,
+
+        resetModels: function resetModelsFn() {
+            if (confirm('Are you sure you want to Delete All Models?')) {
+                for (var i = 0; i < allCurrentModels.length; i++) {
+                    this.instantTrackable.drawables.removeCamDrawable(allCurrentModels[i]);
                 }
-            });
-
-            allCurrentModels.push(model);
-            lastAddedModel = model;
-            this.instantTrackable.drawables.addCamDrawable(model);
+                allCurrentModels = [];
+                World.resetAllModelValues();
+            } else {
+                // Do nothing!
+            }
         }
-    },
+        ,
 
-    isTracking: function isTrackingFn() {
-        return (this.tracker.state === AR.InstantTrackerState.TRACKING);
-    },
-
-    addModelValues: function addModelValuesFn() {
-        rotationValues.push(defaultRotationValue);
-        scaleValues.push(defaultScaleValue);
-    },
-
-    resetModels: function resetModelsFn() {
-        if (confirm('Are you sure you want to Delete All Models?')) {
-        for (var i = 0; i < allCurrentModels.length; i++) {
-            this.instantTrackable.drawables.removeCamDrawable(allCurrentModels[i]);
+        resetAllModelValues: function resetAllModelValuesFn() {
+            rotationValues = [];
+            scaleValues = [];
         }
-            allCurrentModels = [];
-            World.resetAllModelValues();
-        } else {
-            // Do nothing!
+        ,
+
+        loadPathFromJsonData: function loadPathFromJsonDataFn(paths) {
+            // empty list of visible markers
+            World.modelPaths = [];
+            allModelImgSources = [];
+            for (var i = 0; i < paths.length; i++) {
+                World.modelPaths.push(paths[i].model);
+                allModelImgSources.push(paths[i].image);
+
+            }
+            $("#inputs").empty();
+            for (var i = 0; i < allModelImgSources.length; i++) {
+                $("#inputs").append("<input data-id=" + i + " class='tracking-model-button list-group-item' type='image' src=" + allModelImgSources[i] + " />");
+            }
+            $("#inputs").append("<input id='tracking-model-reset-button' class='tracking-model-button list-group-item' type='image' src='assets/buttons/trash.png' onclick='World.resetModels()' />");
+            this.createOverlays();
         }
-    },
-
-    resetAllModelValues: function resetAllModelValuesFn() {
-        rotationValues = [];
-        scaleValues = [];
-    },
-
-    loadPathFromJsonData: function loadPathFromJsonDataFn(paths) {
-    	// empty list of visible markers
-        $("#tracking-start-stop-button").on('load',function(){
-            deleteObjBtnPos = $(this).offset();
-        });
-    	World.modelPaths = [];
-    	allModelImgSources = [];
-    	for (var i = 0; i < paths.length; i++) {
-            World.modelPaths.push(paths[i].model);
-            allModelImgSources.push(paths[i].image) ;
-
-    	}
-        $("#inputs").empty();
-        for(var i=0;i<allModelImgSources.length;i++){
-            $("#inputs").append("<input data-id=" + i + " class='tracking-model-button list-group-item' type='image' src="+allModelImgSources[i]+" />");
-        }
-        $("#inputs").append("<input id='tracking-model-reset-button' class='tracking-model-button list-group-item' type='image' src='assets/buttons/trash.png' onclick='World.resetModels()' />");
-    	this.createOverlays();
-   	}
-};
+    }
+;
 /*
-World.init();*/
+ World.init();*/
