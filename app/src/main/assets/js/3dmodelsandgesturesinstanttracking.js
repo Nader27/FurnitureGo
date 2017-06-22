@@ -179,7 +179,7 @@ var World = {
                                 var bottom = off.top + heig;
                                 //alert(event.type);
                                 //touch = event.originalEvent.changedTouches[0];
-                                if (Touchposition.x > off.left && Touchposition.x < right && Touchposition.y > off.top && Touchposition.y < bottom) {
+                                if (Touchposition.pageX > off.left && Touchposition.pageX < right && Touchposition.pageY > off.top && Touchposition.pageY < bottom) {
                                     deleteObj = true;
                                     oldscale = this.scale;
                                     this.scale = {x: 0.001, y: 0.001, z: 0.001};
