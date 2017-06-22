@@ -286,7 +286,7 @@ var World = {
             for (var i = 0; i < allModelImgSources.length; i++) {
                 $("#inputs").append("<input data-id=" + i + " class='tracking-model-button list-group-item' type='image' src=" + allModelImgSources[i] + " />");
             }
-            $("#inputs").append("<input id='tracking-model-reset-button' class='tracking-model-button list-group-item' type='image' src='assets/buttons/trash.png' onclick='World.resetModels()' />");
+            $("#inputs").append("<input id='tracking-model-reset-button' class='tracking-model-button list-group-item' type='image' src='assets/buttons/delete_all.png' onclick='World.resetModels()' />");
             this.createOverlays();
         }
     }
