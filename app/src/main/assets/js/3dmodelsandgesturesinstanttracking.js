@@ -19,10 +19,9 @@ AR.context.on2FingerGestureStarted = function () {
 };
 var Touchposition;
 document.addEventListener('touchmove', function(event) {
-        event.preventDefault();
-        var touch = event.touches[0];
-        Touchposition.x = touch.pageX;
-        Touchposition.y = touch.pageY;
+        var touch = event.changedTouches[0];
+        Touchposition.x = parseInt(touch.pageX);
+        Touchposition.y = parseInt(touch.pageY);
 }, false);
 
 var World = {
