@@ -18,11 +18,16 @@ AR.context.on2FingerGestureStarted = function () {
     oneFingerGestureAllowed = false;
 };
 var Touchposition;
-document.addEventListener('touchmove', function(event) {
-        var touch = event.changedTouches[0];
-        Touchposition.x = parseInt(touch.pageX);
-        Touchposition.y = parseInt(touch.pageY);
-}, false);
+$(document).ready(function(){
+  $(document).on("touchmove",function(event){
+    if(event.originalEvent.touches && event.originalEvent.touches.length) {
+        Touchposition = event.originalEvent.touches[0];
+    } else if (event.originalEvent.changedTouches && event.originalEvent.changedTouches.length) {
+        Touchposition = event.originalEvent.changedTouches[0];
+    }
+    $("#textt").html("x ="+Touchposition.pageX+" y ="+Touchposition.pageY);
+  });
+});
 
 var World = {
         modelPaths: [],
@@ -35,7 +40,7 @@ var World = {
         initialDrag: false,
         lastAddedModel: null,
 
-        /*    init: function initFn() {
+            init: function initFn() {
          $("#inputs").empty();
          for(var i=0;i<allModelImgSources.length;i++){
          $("#inputs").append("<input data-id=" + i + " class='tracking-model-button list-group-item' type='image' src="+allModelImgSources[i]+" />");
@@ -43,7 +48,7 @@ var World = {
          $("#inputs").append("<input id='tracking-model-reset-button' class='tracking-model-button list-group-item' type='image' src='assets/buttons/trash.png' onclick='World.resetModels()' />");
 
          this.createOverlays();
-         },*/
+         },
 
         createOverlays: function createOverlaysFn() {
             var crossHairsRedImage = new AR.ImageResource("assets/crosshairs_red.png");
@@ -174,7 +179,6 @@ var World = {
                                 var bottom = off.top + heig;
                                 //alert(event.type);
                                 //touch = event.originalEvent.changedTouches[0];
-                                $("#textt").html("x = "+Touchposition.x+" y = "+Touchposition.y);
                                 if (Touchposition.x > off.left && Touchposition.x < right && Touchposition.y > off.top && Touchposition.y < bottom) {
                                     deleteObj = true;
                                     oldscale = this.scale;
@@ -276,5 +280,5 @@ var World = {
         }
     }
 ;
-/*
- World.init();*/
+
+ World.init();
