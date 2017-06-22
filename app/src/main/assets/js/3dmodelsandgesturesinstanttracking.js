@@ -3,7 +3,7 @@ var defaultRotationValue = 0;
 
 var rotationValues = [];
 var scaleValues = [];
-var oldscale:{x:0,y:0,z:0};
+var oldscale;
 var allCurrentModels = [];
 var allModelImgSources = [];
 
@@ -25,7 +25,6 @@ $(document).ready(function(){
     } else if (event.originalEvent.changedTouches && event.originalEvent.changedTouches.length) {
         Touchposition = event.originalEvent.changedTouches[0];
     }
-    $("#textt").html("x ="+Touchposition.pageX+" y ="+Touchposition.pageY);
   });
 });
 
@@ -182,12 +181,15 @@ var World = {
                                 //touch = event.originalEvent.changedTouches[0];
                                 if (Touchposition.pageX > off.left && Touchposition.pageX < right && Touchposition.pageY > off.top && Touchposition.pageY < bottom) {
                                     deleteObj = true;
-                                    oldscale = this.scale;
+                                    oldscale.x = this.scale.x;
+                                    oldscale.y = this.scale.y;
+                                    oldscale.z = this.scale.z;
+                                    $("#textt").html("x =" + oldscale.x + " y =" + oldscale.y + " z = " + oldscale.z);
                                     this.scale = {x: 0.01, y: 0.01, z: 0.01};
                                 } else {
                                     if (deleteObj == true) {
                                         deleteObj = false;
-                                        this.scale = oldscale;
+                                        this.scale = {x: oldscale.x, y: oldscale.y, z: oldscale.z};
                                     }
                                 }
 
