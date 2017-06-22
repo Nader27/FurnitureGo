@@ -3,7 +3,9 @@ var defaultRotationValue = 0;
 
 var rotationValues = [];
 var scaleValues = [];
-var oldscale;
+var oldscalex;
+var oldscaley;
+var oldscalez;
 var allCurrentModels = [];
 var allModelImgSources = [];
 
@@ -39,7 +41,7 @@ var World = {
         initialDrag: false,
         lastAddedModel: null,
 
-            init: function initFn() {
+    /*    init: function initFn() {
          $("#inputs").empty();
          for(var i=0;i<allModelImgSources.length;i++){
          $("#inputs").append("<input data-id=" + i + " class='tracking-model-button list-group-item' type='image' src="+allModelImgSources[i]+" />");
@@ -47,7 +49,7 @@ var World = {
          $("#inputs").append("<input id='tracking-model-reset-button' class='tracking-model-button list-group-item' type='image' src='assets/buttons/trash.png' onclick='World.resetModels()' />");
 
          this.createOverlays();
-         },
+     },*/
 
         createOverlays: function createOverlaysFn() {
             var crossHairsRedImage = new AR.ImageResource("assets/crosshairs_red.png");
@@ -181,15 +183,15 @@ var World = {
                                 //touch = event.originalEvent.changedTouches[0];
                                 if (Touchposition.pageX > off.left && Touchposition.pageX < right && Touchposition.pageY > off.top && Touchposition.pageY < bottom) {
                                     deleteObj = true;
-                                    oldscale.x = this.scale.x;
-                                    oldscale.y = this.scale.y;
-                                    oldscale.z = this.scale.z;
-                                    $("#textt").html("x =" + oldscale.x + " y =" + oldscale.y + " z = " + oldscale.z);
+                                    oldscalex = this.scale.x;
+                                    oldscaley = this.scale.y;
+                                    oldscalez = this.scale.z;
+                                    $("#textt").html("x =" + oldscalex + " y =" + oldscaley + " z = " + oldscalez);
                                     this.scale = {x: 0.01, y: 0.01, z: 0.01};
                                 } else {
                                     if (deleteObj == true) {
                                         deleteObj = false;
-                                        this.scale = {x: oldscale.x, y: oldscale.y, z: oldscale.z};
+                                        this.scale = {x: oldscalex, y: oldscaley, z: oldscalez};
                                     }
                                 }
 
@@ -288,4 +290,4 @@ var World = {
     }
 ;
 
- World.init();
+//World.init();
