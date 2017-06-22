@@ -197,7 +197,7 @@ var World = {
                         },
                         onDragEnded: function (x, y) {
                             if (deleteObj == true) {
-                                removeModel(this);
+                                World.removeModel(this);
                             }
                             $("#tracking-start-stop-button").attr('src', 'assets/buttons/stop.png');
                             // react to the drag gesture ending
