@@ -17,6 +17,13 @@ var oneFingerGestureAllowed = false;
 AR.context.on2FingerGestureStarted = function () {
     oneFingerGestureAllowed = false;
 };
+var Touchposition;
+document.addEventListener('touchmove', function(event) {
+        event.preventDefault();
+        var touch = event.touches[0];
+        Touchposition.x = touch.pageX;
+        Touchposition.y = touch.pageY;
+}, false);
 
 var World = {
         modelPaths: [],
@@ -154,7 +161,7 @@ var World = {
                             $("#tracking-start-stop-button").attr('src', 'assets/buttons/trash.png');
                             oneFingerGestureAllowed = true;
                         },
-                        onDragChanged: function (x,y,relativeX, relativeY, intersectionX, intersectionY) {
+                        onDragChanged: function (relativeX, relativeY, intersectionX, intersectionY) {
                             if (oneFingerGestureAllowed) {
                                 // We recommend setting the entire translate property rather than
                                 // its individual components as the latter would cause several
@@ -168,10 +175,8 @@ var World = {
                                 var bottom = off.top + heig;
                                 //alert(event.type);
                                 //touch = event.originalEvent.changedTouches[0];
-
-
-                                $("#textt").html("x = "+x);
-                                if (relativeX > off.left && relativeX < right && relativeY > off.top && relativeY < bottom) {
+                                $("#textt").html("x = "+Touchposition.x+" y = "+Touchposition.y);
+                                if (Touchposition.x > off.left && Touchposition.x < right && Touchposition.y > off.top && Touchposition.y < bottom) {
                                     deleteObj = true;
                                     oldscale = this.scale;
                                     this.scale = {x: 0.001, y: 0.001, z: 0.001};
