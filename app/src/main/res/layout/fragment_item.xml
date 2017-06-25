@@ -54,8 +54,8 @@
 
         <ImageButton
             android:id="@+id/item_menu"
-            android:layout_width="20dp"
-            android:layout_height="30dp"
+            android:layout_width="30dp"
+            android:layout_height="50dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:background="@null"

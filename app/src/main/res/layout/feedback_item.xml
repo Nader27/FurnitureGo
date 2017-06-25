@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:orientation="horizontal"
+    android:padding="10dp"
+    android:weightSum="100">
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/feed_user_image"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_gravity="start"
+        android:layout_weight="10"
+        android:src="@drawable/com_facebook_profile_picture_blank_portrait"
+        app:riv_corner_radius="35dip"
+        app:riv_mutate_background="true"
+        app:riv_oval="true"
+        app:riv_tile_mode="clamp" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_weight="90"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/feed_user_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="A Google user"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textSize="15sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RatingBar
+                android:id="@+id/feed_rate"
+                style="@style/Widget.AppCompat.RatingBar.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:numStars="5"
+                android:rating="5"
+                android:theme="@style/RatingBar" />
+
+            <TextView
+                android:id="@+id/feed_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="6/25/2017" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/feed_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="This App is So Good I can't belive my eyes and i never seen any app as good as this app"
+            android:textAppearance="@style/TextAppearance.AppCompat" />
+
+    </LinearLayout>
+</LinearLayout>

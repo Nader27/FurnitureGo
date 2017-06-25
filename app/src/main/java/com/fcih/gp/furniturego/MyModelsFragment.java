@@ -18,10 +18,10 @@ import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -31,115 +31,109 @@ import java.util.Locale;
  * <p/>
  * interface.
  */
-public class SearchFragment extends Fragment {
+public class MyModelsFragment extends Fragment {
 
-    private static final String OBJECT_QUERY = "QUERY";
-    private String query;
     private FirebaseRecyclerAdapter<FireBaseHelper.Favorites, viewholder> mAdapter = null;
     private RecyclerView recyclerView;
     private BaseActivity activity;
+    private List<String> Keys;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public SearchFragment() {
+    public MyModelsFragment() {
     }
 
-    public static SearchFragment newInstance(String Query) {
-        SearchFragment fragment = new SearchFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString(OBJECT_QUERY, Query);
-        fragment.setArguments(bundle);
-        return fragment;
+    public static MyModelsFragment newInstance() {
+        return new MyModelsFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = (BaseActivity) getActivity();
-        query = getArguments().getString(OBJECT_QUERY);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item_list, container, false);
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         // Set the adapter
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         final Context context = view.getContext();
         activity.findViewById(R.id.tabs).setVisibility(View.GONE);
         recyclerView = (RecyclerView) view.findViewById(R.id.list);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         ProgressDialog progressDialog = new ProgressDialog(getContext());
-        progressDialog.setTitle("Searching");
-        progressDialog.setMessage("Searching For " + query);
+        progressDialog.setTitle("Loading");
+        progressDialog.setMessage("Loading Your Models");
         progressDialog.show();
-        Query que = FireBaseHelper.Objects.Ref.orderByChild(FireBaseHelper.Objects.Table.Name.text).startAt(this.query).endAt(this.query + "\uf8ff");
-        new FireBaseHelper.Objects().Where(que, Data -> {
-            if (Data.size() == 0) {
-                progressDialog.dismiss();
-                TextView textView = (TextView) view.findViewById(R.id.emptycategory);
-                textView.setText("Your Search '" + this.query + "' didn't match any model");
-                textView.setVisibility(View.VISIBLE);
-                //showProgress(false);
-            } else {
-                RecyclerView.Adapter<viewholder> Adapter = new RecyclerView.Adapter<viewholder>() {
-                    @Override
-                    public viewholder onCreateViewHolder(ViewGroup parent, int viewType) {
-                        View itemView = LayoutInflater.from(parent.getContext())
-                                .inflate(R.layout.fragment_item, parent, false);
+        Keys = new ArrayList<>();
+        File Dir = new File(Environment.getExternalStorageDirectory(), File.separator + "FurnitureGo" + File.separator);
+        if (Dir.isDirectory()) {
+            for (File child : Dir.listFiles()) {
+                if (child.isDirectory()) {
+                    Keys.add(child.getName());
+                }
+            }
+        }
+        if (Keys.size() == 0) {
+            progressDialog.dismiss();
+            TextView textView = (TextView) view.findViewById(R.id.emptycategory);
+            textView.setText("Your Don't Have any Model");
+            textView.setVisibility(View.VISIBLE);
+        } else {
+            RecyclerView.Adapter<viewholder> Adapter = new RecyclerView.Adapter<viewholder>() {
+                @Override
+                public viewholder onCreateViewHolder(ViewGroup parent, int viewType) {
+                    View itemView = LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.fragment_item, parent, false);
 
-                        return new viewholder(itemView);
-                    }
+                    return new viewholder(itemView);
+                }
 
-                    @Override
-                    public void onBindViewHolder(viewholder viewHolder, int position) {
-                        FireBaseHelper.Objects data = Data.get(position);
-                        viewHolder.mTitleView.setText(data.name);
-                        viewHolder.mCompanyView.setText(data.companies.name);
-                        viewHolder.mRateView.setText(getRate(data.feedbacks));
-                        Picasso.with(getContext()).load(data.image_path).into(viewHolder.mImageView);
+                @Override
+                public void onBindViewHolder(viewholder viewHolder, int position) {
+                    new FireBaseHelper.Objects().Findbykey(Keys.get(position), Data -> {
+                        viewHolder.mTitleView.setText(Data.name);
+                        viewHolder.mCompanyView.setText(Data.companies.name);
+                        viewHolder.mRateView.setText(getRate(Data.feedbacks));
+                        Picasso.with(getContext()).load(Data.image_path).into(viewHolder.mImageView);
                         viewHolder.mView.setOnClickListener(v -> {
-                            ModelFragment mod = ModelFragment.newInstance(data.Key);
+                            ModelFragment mod = ModelFragment.newInstance(Data.Key);
                             getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.flContent, mod).addToBackStack(null).commit();
                         });
                         viewHolder.mImageButton.setOnClickListener(v -> {
                             PopupMenu popup = new PopupMenu(context, viewHolder.mImageButton);
                             MenuInflater inflater1 = popup.getMenuInflater();
                             inflater1.inflate(R.menu.pop_menu, popup.getMenu());
-                            new FireBaseHelper.Favorites().Findbykey(data.Key + mAuth.getCurrentUser().getUid(), Data1 -> {
+                            new FireBaseHelper.Favorites().Findbykey(Data.Key + mAuth.getCurrentUser().getUid(), Data1 -> {
                                 if (Data1 == null) {
                                     popup.getMenu().findItem(R.id.item_favorite).setOnMenuItemClickListener(menuItem -> {
                                         FireBaseHelper.Favorites favorites = new FireBaseHelper.Favorites();
                                         favorites.user_id = mAuth.getCurrentUser().getUid();
-                                        favorites.object_id = data.Key;
-                                        favorites.Add(data.Key + mAuth.getCurrentUser().getUid());
+                                        favorites.object_id = Data.Key;
+                                        favorites.Add(Data.Key + mAuth.getCurrentUser().getUid());
                                         return true;
                                     });
 
                                 } else {
                                     popup.getMenu().findItem(R.id.item_favorite).setTitle("Remove From Favorite");
                                     popup.getMenu().findItem(R.id.item_favorite).setOnMenuItemClickListener(menuItem -> {
-                                        Data1.Remove(data.Key + mAuth.getCurrentUser().getUid());
+                                        Data1.Remove(Data.Key + mAuth.getCurrentUser().getUid());
                                         return true;
                                     });
                                 }
                             });
-                            File Dir = new File(Environment.getExternalStorageDirectory(), File.separator + "FurnitureGo" + File.separator + data.Key);
-                            if (Dir.exists()) {
-                                popup.getMenu().findItem(R.id.item_download).setVisible(false);
-                                popup.getMenu().findItem(R.id.item_delete).setVisible(true);
-                            } else {
-                                popup.getMenu().findItem(R.id.item_download).setVisible(true);
-                                popup.getMenu().findItem(R.id.item_delete).setVisible(false);
-                            }
+                            popup.getMenu().findItem(R.id.item_download).setVisible(false);
+                            popup.getMenu().findItem(R.id.item_delete).setVisible(true);
                             popup.setOnMenuItemClickListener(item -> {
                                 int id = item.getItemId();
-                                if (id == R.id.item_download) {
-                                    ModelFragment.Download(data, getContext());
-                                } else if (id == R.id.item_delete) {
-                                    ModelFragment.Delete(data.Key, getContext());
+                                if (id == R.id.item_delete) {
+                                    ModelFragment.Delete(Data.Key, getContext());
+                                    mAdapter.getRef(position).removeValue();
+                                    mAdapter.notifyDataSetChanged();
                                 }
                                 return true;
                             });
@@ -148,17 +142,16 @@ public class SearchFragment extends Fragment {
                         if (mAdapter.getItemCount() - 1 == position) {
                             progressDialog.dismiss();
                         }
+                    });
+                }
 
-                    }
-
-                    @Override
-                    public int getItemCount() {
-                        return Data.size();
-                    }
-                };
-                recyclerView.setAdapter(Adapter);
-            }
-        });
+                @Override
+                public int getItemCount() {
+                    return Keys.size();
+                }
+            };
+            recyclerView.setAdapter(Adapter);
+        }
         return view;
     }
 

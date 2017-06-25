@@ -105,6 +105,7 @@ public class FavFragment extends Fragment {
                                     if (id == R.id.item_download) {
                                         ModelFragment.Download(Data, getContext());
                                     } else if (id == R.id.item_favorite) {
+                                        new FireBaseHelper.Favorites().Remove(Data.Key + mAuth.getCurrentUser().getUid());
                                         mAdapter.getRef(position).removeValue();
                                         mAdapter.notifyDataSetChanged();
                                     } else if (id == R.id.item_delete) {

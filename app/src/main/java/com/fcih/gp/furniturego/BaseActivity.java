@@ -178,11 +178,12 @@ public class BaseActivity extends AppCompatActivity
 
     public void SearchSetup(Menu menu) {
         MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(
                 new ComponentName(this, BaseActivity.class)
         ));
+        searchView.setSubmitButtonEnabled(true);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -256,7 +257,8 @@ public class BaseActivity extends AppCompatActivity
             ProfileFragment profile = ProfileFragment.newInstance();
             getSupportFragmentManager().beginTransaction().replace(R.id.flContent, profile).addToBackStack(null).commit();
         } else if (id == R.id.nav_models) {
-
+            MyModelsFragment fragment = MyModelsFragment.newInstance();
+            getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).addToBackStack(null).commit();
         } else if (id == R.id.nav_whishlist) {
             FavFragment fav = FavFragment.newInstance();
             getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fav).addToBackStack(null).commit();
