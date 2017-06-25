@@ -42,8 +42,11 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.TwitterAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.DefaultLogger;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterConfig;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
@@ -56,6 +59,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private static final String TAG = "Login Activity";
     private static final int RC_SIGN_IN = 9001;
     private static final String DESIGNER_TYPE = "user";
+    private static final String DEAFULT_IMAGE = "https://firebasestorage.googleapis.com/v0/b/furniture-go.appspot.com/o/ProfileImage%2Fdeafult.png?alt=media&token=d2ce2ee2-ed54-4426-8bf2-13cb19d59d4c";
     // UI references.
     private ProgressBar mProgressView;
     private LinearLayout mContainerView;
@@ -207,7 +211,13 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         }*/
         //endregion
 
-        Twitter.initialize(LoginActivity.this);
+        TwitterConfig config = new TwitterConfig.Builder(this)
+                .logger(new DefaultLogger(Log.DEBUG))
+                .twitterAuthConfig(new TwitterAuthConfig(getResources().getString(R.string.CONSUMER_KEY),
+                        getResources().getString(R.string.CONSUMER_SECRET)))
+                .debug(true)
+                .build();
+        Twitter.initialize(config);
         twitterbtn = new TwitterLoginButton(LoginActivity.this);
         callbackManager = CallbackManager.Factory.create();
 
@@ -273,6 +283,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 handleResult(account);
             } else {
                 Log.d(TAG, "Error Google Signin ");
+                showProgress(false);
                 Toast.makeText(LoginActivity.this, result.getStatus().getStatusMessage(), Toast.LENGTH_LONG).show();
             }
         }
@@ -433,7 +444,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                     FireBaseHelper.Users FUSER = new FireBaseHelper.Users();
                                     FUSER.name = mregister_fullnameView.getText().toString();
                                     FUSER.email = user.getEmail();
-                                    FUSER.image_uri = "";
+                                    FUSER.image_uri = DEAFULT_IMAGE;
                                     FUSER.type_id = DESIGNER_TYPE;
                                     FUSER.Add(user.getUid());
                                     showProgress(false);

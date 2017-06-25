@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".ModelActivity"
+    tools:context=".ModelFragment"
     tools:showIn="@layout/fragment_model">
 
     <LinearLayout
@@ -64,12 +64,60 @@
             </LinearLayout>
         </LinearLayout>
 
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:text="Download" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <LinearLayout
+                android:id="@+id/Downloading"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="70"
+                android:orientation="vertical"
+                android:visibility="invisible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:weightSum="100">
+
+                    <TextView
+                        android:id="@+id/TextDownloadlog"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="80"
+                        android:text="Downloading ..." />
+
+                    <TextView
+                        android:id="@+id/Textpresentage"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="20"
+                        android:text="0%" />
+
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/downloadprogressBar"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="100"
+                    android:progress="0" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/Download"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="30"
+                android:text="Download" />
+
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"
@@ -84,7 +132,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/Rate_TextView"
+                android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="3.5"
@@ -97,7 +145,6 @@
                 android:orientation="vertical">
 
                 <RatingBar
-                    android:id="@+id/ratingBar"
                     style="@style/Widget.AppCompat.RatingBar.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -115,7 +162,6 @@
         </LinearLayout>
 
         <View
-            android:id="@+id/view3"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_margin="20dp"

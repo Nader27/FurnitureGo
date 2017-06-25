@@ -1,14 +1,13 @@
 package com.fcih.gp.furniturego;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.widget.Toast;
 
 import com.wikitude.architect.services.camera.CameraLifecycleListener;
 
-public class SampleCam2Activity extends AutoHdSampleCamActivity {
+public class SampleCam2Activity extends SampleCamActivity {
 
     private CameraLifecycleListener cameraLifecycleListener = new CameraLifecycleListener() {
         @Override
@@ -30,26 +29,16 @@ public class SampleCam2Activity extends AutoHdSampleCamActivity {
                 AlertDialog alertDialog = new AlertDialog.Builder(SampleCam2Activity.this).create();
                 alertDialog.setTitle("Camera2 issue.");
                 alertDialog.setMessage("There was an unexpected issue with this devices camera2. Should this activity be recreated with the old camera api?");
-                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(SampleCam2Activity.this, SampleCam2Activity.class);
-                        intent.putExtra("enableCamera2", false);
-                        intent.putExtras(getIntent());
-                        finish();
-                        startActivity(intent);
-                    }
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes", (dialog, which) -> {
+                    Intent intent = new Intent(SampleCam2Activity.this, SampleCam2Activity.class);
+                    intent.putExtra("enableCamera2", false);
+                    intent.putExtras(getIntent());
+                    finish();
+                    startActivity(intent);
                 });
-                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                recreate();
-                            }
-                        });
-                    }
+                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No", (dialog, which) -> {
+                    dialog.dismiss();
+                    runOnUiThread(() -> recreate());
                 });
                 alertDialog.show();
             } else {

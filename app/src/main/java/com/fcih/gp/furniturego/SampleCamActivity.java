@@ -1,17 +1,25 @@
 package com.fcih.gp.furniturego;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.wikitude.architect.ArchitectJavaScriptInterfaceListener;
+import com.wikitude.architect.ArchitectStartupConfiguration;
 import com.wikitude.architect.ArchitectView;
+import com.wikitude.architect.ArchitectView.CaptureScreenCallback;
 import com.wikitude.architect.ArchitectView.SensorAccuracyChangeListener;
 import com.wikitude.common.camera.CameraSettings;
+
+import org.json.JSONException;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,8 +31,8 @@ public class SampleCamActivity extends AbstractArchitectCamActivity {
     protected Bitmap screenCapture = null;
     /**
      * last time the calibration toast was shown, this avoids too many toast shown when compass needs calibration
-	 */
-	private long lastCalibrationToastShownTimeMillis = System.currentTimeMillis();
+     */
+    private long lastCalibrationToastShownTimeMillis = System.currentTimeMillis();
 
 	@Override
 	public String getARchitectWorldPath() {
@@ -58,6 +66,28 @@ public class SampleCamActivity extends AbstractArchitectCamActivity {
             if (accuracy < SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM && SampleCamActivity.this != null && !SampleCamActivity.this.isFinishing() && System.currentTimeMillis() - SampleCamActivity.this.lastCalibrationToastShownTimeMillis > 5 * 1000) {
                 Toast.makeText(SampleCamActivity.this, R.string.compass_accuracy_low, Toast.LENGTH_LONG).show();
                 SampleCamActivity.this.lastCalibrationToastShownTimeMillis = System.currentTimeMillis();
+            }
+        };
+    }
+
+    @Override
+    public ArchitectJavaScriptInterfaceListener getArchitectJavaScriptInterfaceListener() {
+        return jsonObject -> {
+            try {
+                switch (jsonObject.getString("action")) {
+                    case "capture_screen":
+                        SampleCamActivity.this.architectView.captureScreen(CaptureScreenCallback.CAPTURE_MODE_CAM_AND_WEBVIEW, screenCapture -> {
+                            if (ContextCompat.checkSelfPermission(SampleCamActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                SampleCamActivity.this.screenCapture = screenCapture;
+                                ActivityCompat.requestPermissions(SampleCamActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WIKITUDE_PERMISSIONS_REQUEST_EXTERNAL_STORAGE);
+                            } else {
+                                SampleCamActivity.this.saveScreenCaptureToExternalStorage(screenCapture);
+                            }
+                        });
+                        break;
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "onJSONObjectReceived: ", e);
             }
         };
     }
@@ -98,8 +128,13 @@ public class SampleCamActivity extends AbstractArchitectCamActivity {
 
 	@Override
 	protected boolean hasInstant() {
-        return true;
-        //return (ArchitectView.getSupportedFeaturesForDevice(getApplicationContext()) & ArchitectStartupConfiguration.Features.InstantTracking) != 0;
+        //return true;
+        return (ArchitectView.getSupportedFeaturesForDevice(getApplicationContext()) & ArchitectStartupConfiguration.Features.InstantTracking) != 0;
+    }
+
+    @Override
+    public CameraSettings.CameraResolution getCameraResolution() {
+        return CameraSettings.CameraResolution.AUTO;
     }
 
 	@Override
@@ -110,15 +145,15 @@ public class SampleCamActivity extends AbstractArchitectCamActivity {
     protected void saveScreenCaptureToExternalStorage(Bitmap screenCapture) {
         if ( screenCapture != null ) {
             // store screenCapture into external cache directory
-            final File screenCaptureFile = new File(Environment.getExternalStorageDirectory().toString(), "screenCapture_" + System.currentTimeMillis() + ".jpg");
+            final File screenCaptureFile = new File(Environment.getExternalStorageDirectory().toString() + File.separator + "FurnitureGo ScreenShots" + File.separator, "Shoot_" + System.currentTimeMillis() + ".jpg");
 
             // 1. Save bitmap to file & compress to jpeg. You may use PNG too
             try {
-
                 final FileOutputStream out = new FileOutputStream(screenCaptureFile);
                 screenCapture.compress(Bitmap.CompressFormat.JPEG, 90, out);
                 out.flush();
                 out.close();
+                Toast.makeText(SampleCamActivity.this, "ScreenShot Saved at " + screenCaptureFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
 
                 // 2. create send intent
                 final Intent share = new Intent(Intent.ACTION_SEND);

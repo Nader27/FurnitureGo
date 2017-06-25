@@ -3,29 +3,40 @@ package com.fcih.gp.furniturego;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.squareup.picasso.Picasso;
+import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.builder.AnimateGifMode;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
+
+import pl.droidsonroids.gif.GifImageView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,6 +45,7 @@ public class ModelFragment extends Fragment {
 
     private static final String TAG = "ModelActivity";
     private static final String OBJECT_KEY = "KEY";
+    private static final int DOWNLOAD_PERMISSIONS_REQUEST_EXTERNAL_STORAGE = 1001;
     private String ObjectKey;
     private FirebaseStorage storage;
     private LinearLayout mLinearLayout;
@@ -41,6 +53,18 @@ public class ModelFragment extends Fragment {
     private AppBarLayout mAppBarView;
     private FloatingActionButton fab;
     private BaseActivity activity;
+    private GifImageView mgifImageView;
+    private ProgressBar mdownloadprogressBar;
+    private LinearLayout mDownloading;
+    private TextView mDownloadLog;
+    private TextView mDownloadpresentage;
+    private Button mdownloadbutton;
+    private TextView mNameView;
+    private TextView mCompanyView;
+    private TextView mSizeView;
+    private ImageView mimageView;
+    private CollapsingToolbarLayout mTitleBarView;
+    private Context context;
 
     public ModelFragment() {
         // Required empty public constructor
@@ -54,11 +78,120 @@ public class ModelFragment extends Fragment {
         return fragment;
     }
 
+    public static FileDownloadTask Download(FireBaseHelper.Objects Data, Context context) {
+        FileDownloadTask task = null;
+        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions((Activity) context, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, DOWNLOAD_PERMISSIONS_REQUEST_EXTERNAL_STORAGE);
+        } else {
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            final StorageReference modelRef = storage.getReferenceFromUrl(Data.model_path);
+            final StorageReference imageRef = storage.getReferenceFromUrl(Data.image_path);
+            try {
+                File Dir = new File(Environment.getExternalStorageDirectory(), File.separator + "FurnitureGo" + File.separator + Data.Key);
+                if (!Dir.exists())
+                    if (!Dir.mkdir()) {
+                        Toast.makeText(context, "Create Directory Error", Toast.LENGTH_LONG).show();
+                    }
+                File modelFile = File.createTempFile(Data.Key, ".wt3", Dir);
+                File imageFile = File.createTempFile(Data.Key, ".png", Dir);
+                imageRef.getFile(imageFile);
+                task = modelRef.getFile(modelFile);
+                task.addOnProgressListener(taskSnapshot -> {
+                    double data = taskSnapshot.getBytesTransferred();
+                    boolean mb = false;
+                    data /= 1024;
+                    if (data > 1000) {
+                        data /= 1024;
+                        mb = true;
+                    }
+                    String Transferred = String.format(Locale.ENGLISH, "%.2f" + (mb ? "MB" : "KB"), data);
+                    data = taskSnapshot.getTotalByteCount();
+                    mb = false;
+                    data /= 1024;
+                    if (data > 1000) {
+                        data /= 1024;
+                        mb = true;
+                    }
+                    String Total = String.format(Locale.ENGLISH, "%.2f" + (mb ? "MB" : "KB"), data);
+                    Activity activity = (Activity) context;
+                    if (activity.findViewById(R.id.TextDownloadlog) != null) {
+                        TextView textView = (TextView) activity.findViewById(R.id.TextDownloadlog);
+                        textView.setText(Transferred + "/" + Total);
+                    }
+                    if (activity.findViewById(R.id.Textpresentage) != null) {
+                        TextView textView = (TextView) activity.findViewById(R.id.Textpresentage);
+                        int presentage = (int) ((taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount()) * 100);
+                        textView.setText(presentage + "%");
+                    }
+                    if (activity.findViewById(R.id.downloadprogressBar) != null) {
+                        ProgressBar progressBar = (ProgressBar) activity.findViewById(R.id.downloadprogressBar);
+                        int presentage = (int) ((taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount()) * 100);
+                        progressBar.setProgress(presentage);
+                    }
+                });
+                task.addOnSuccessListener(taskSnapshot -> {
+                    Toast.makeText(context, "Download Complete", Toast.LENGTH_LONG).show();
+                    Activity activity = (Activity) context;
+                    if (activity.findViewById(R.id.TextDownloadlog) != null) {
+                        TextView textView = (TextView) activity.findViewById(R.id.TextDownloadlog);
+                        textView.setText("Download Success");
+                    }
+                });
+                task.addOnFailureListener(task1 -> {
+                    Toast.makeText(context, "Download Failed " + task1.getMessage(), Toast.LENGTH_LONG).show();
+                    Activity activity = (Activity) context;
+                    if (activity.findViewById(R.id.TextDownloadlog) != null) {
+                        TextView textView = (TextView) activity.findViewById(R.id.TextDownloadlog);
+                        textView.setText("Download Failed");
+                    }
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return task;
+    }
+
+    public static void Delete(String Key, Context context) {
+        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions((Activity) context, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, DOWNLOAD_PERMISSIONS_REQUEST_EXTERNAL_STORAGE);
+        } else {
+            File Dir = new File(Environment.getExternalStorageDirectory(), File.separator + "FurnitureGo" + File.separator + Key);
+            deleteRecursive(Dir);
+            if (Dir.exists()) {
+                Toast.makeText(context, "Delete Directory Error", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    public static void deleteRecursive(File fileOrDirectory) {
+
+        if (fileOrDirectory.isDirectory()) {
+            for (File child : fileOrDirectory.listFiles()) {
+                deleteRecursive(child);
+            }
+        }
+
+        fileOrDirectory.delete();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        try {
+            FragmentTransaction ft = getActivity().getSupportFragmentManager()
+                    .beginTransaction();
+            ft.remove(this);
+            ft.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ObjectKey = getArguments().getString(OBJECT_KEY);
-        activity = (BaseActivity) getActivity();
+
     }
 
     public void showProgress(final boolean show) {
@@ -104,53 +237,162 @@ public class ModelFragment extends Fragment {
         mLinearLayout = (LinearLayout) view.findViewById(R.id.container);
         mAppBarView = (AppBarLayout) view.findViewById(R.id.app_bar);
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        ObjectKey = getArguments().getString(OBJECT_KEY);
+        storage = FirebaseStorage.getInstance();
+        mgifImageView = (GifImageView) view.findViewById(R.id.gif);
+        mdownloadprogressBar = (ProgressBar) view.findViewById(R.id.downloadprogressBar);
+        mDownloading = (LinearLayout) view.findViewById(R.id.Downloading);
+        mDownloadLog = (TextView) view.findViewById(R.id.TextDownloadlog);
+        mDownloadpresentage = (TextView) view.findViewById(R.id.Textpresentage);
+        mdownloadbutton = (Button) view.findViewById(R.id.Download);
+        mNameView = (TextView) view.findViewById(R.id.Name_TextView);
+        mCompanyView = (TextView) view.findViewById(R.id.Company_TextView);
+        mSizeView = (TextView) view.findViewById(R.id.Size_TextView);
+        mimageView = (ImageView) view.findViewById(R.id.model_imageView);
+        mTitleBarView = (CollapsingToolbarLayout) view.findViewById(R.id.toolbar_layout);
+        context = getContext();
+        activity = (BaseActivity) getActivity();
         activity.getSupportActionBar().hide();
         activity.findViewById(R.id.tabs).setVisibility(View.GONE);
-        storage = FirebaseStorage.getInstance();
         showProgress(true);
         new FireBaseHelper.Objects().Findbykey(ObjectKey, Data -> {
-            TextView mNameView = (TextView) activity.findViewById(R.id.Name_TextView);
-            TextView mCompanyView = (TextView) activity.findViewById(R.id.Company_TextView);
-            final TextView mSizeView = (TextView) activity.findViewById(R.id.Size_TextView);
-            ImageView mimageView = (ImageView) activity.findViewById(R.id.model_imageView);
-            CollapsingToolbarLayout mTitleBarView = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-            Picasso.with(activity.getApplicationContext()).load(Data.image_path).resize(75, 75).into(mimageView);
+
+            Ion.with(context)
+                    .load(Data.image_path)
+                    .withBitmap()
+                    .placeholder(R.drawable.loading)
+                    .animateGif(AnimateGifMode.ANIMATE)
+                    .fitXY()
+                    .intoImageView(mimageView);
+            Ion.with(context)
+                    .load(Data.gif_path)
+                    .withBitmap()
+                    .placeholder(R.drawable.loading)
+                    .animateGif(AnimateGifMode.ANIMATE)
+                    .fitXY()
+                    .intoImageView(mgifImageView);
             mCompanyView.setText(Data.companies.name);
             mNameView.setText(Data.name);
             mTitleBarView.setTitle(Data.name);
             FirebaseStorage storage = FirebaseStorage.getInstance();
             final StorageReference modelRef = storage.getReferenceFromUrl(Data.model_path);
-            final StorageReference imageRef = storage.getReferenceFromUrl(Data.image_path);
             modelRef.getMetadata().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     double kb = (double) task.getResult().getSizeBytes() / 1024;
-                    double mb = kb / 1024;
-                    mSizeView.setText(String.format(Locale.ENGLISH, "%.2f", mb));
+                    if (kb > 1000) {
+                        double mb = kb / 1024;
+                        mSizeView.setText(String.format(Locale.ENGLISH, "%.2fMB", mb));
+                    } else {
+                        mSizeView.setText(String.format(Locale.ENGLISH, "%.2fKB", kb));
+                    }
                 } else {
-                    Toast.makeText(getContext(), task.getException().toString(), Toast.LENGTH_LONG).show();
-                    fab.setEnabled(false);
+                    Toast.makeText(context, task.getException().toString(), Toast.LENGTH_LONG).show();
                 }
                 showProgress(false);
             });
-            fab.setOnClickListener(v -> {
-                try {
-                    File Dir = new File(Environment.getExternalStorageDirectory(), File.separator + "FurnitureGo" + File.separator + Data.name);
-                    if (!Dir.exists())
-                        Dir.mkdir();
-                    File modelFile = File.createTempFile(Data.name, ".wt3", Dir);
-                    File imageFile = File.createTempFile(Data.name, ".png", Dir);
-                    modelRef.getFile(modelFile).addOnSuccessListener(taskSnapshot -> {
-                        // Local temp file has been created
-                        imageRef.getFile(imageFile).addOnSuccessListener(taskSnapshot1 -> {
-                            // Local temp file has been created
-                            Toast.makeText(getContext(), "Download Complete", Toast.LENGTH_LONG).show();
-                        });
+            File Dir = new File(Environment.getExternalStorageDirectory(), File.separator + "FurnitureGo" + File.separator + Data.Key);
+            if (Dir.exists()) {
+                if (modelRef.getActiveDownloadTasks().size() > 0) {
+                    mDownloading.setVisibility(View.VISIBLE);
+                    mdownloadbutton.setText("Cancel");
+                    fab.setImageResource(R.drawable.ic_cancel);
+                    FileDownloadTask task = modelRef.getActiveDownloadTasks().get(0);
+                    task.addOnCompleteListener(task1 -> {
+                        /*FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
+                        ft.detach(this);
+                        ft.attach(this);
+                        ft.commit();*/
                     });
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    fab.setOnClickListener(v -> {
+                        task.cancel();
+                        /*FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
+                        ft.detach(this);
+                        ft.attach(this);
+                        ft.commit();*/
+                    });
+                    mdownloadbutton.setOnClickListener(v -> {
+                        task.cancel();
+                        /*FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
+                        ft.detach(this);
+                        ft.attach(this);
+                        ft.commit();*/
+                    });
+                } else {
+                    fab.setImageResource(R.drawable.ic_delete);
+                    mdownloadbutton.setText("Delete");
+                    fab.setOnClickListener(v -> {
+                        Delete(Data.Key, context);
+                        mdownloadbutton.setText("Download");
+                        fab.setImageResource(R.drawable.ic_download);
+                        /*FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
+                        ft.detach(this);
+                        ft.attach(this);
+                        ft.commit();*/
+                    });
+                    mdownloadbutton.setOnClickListener(v -> {
+                        Delete(Data.Key, context);
+                        mdownloadbutton.setText("Download");
+                        fab.setImageResource(R.drawable.ic_download);
+                        /*FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
+                        ft.detach(this);
+                        ft.attach(this);
+                        ft.commit();*/
+                    });
                 }
-
-            });
+            } else {
+                fab.setOnClickListener(v -> {
+                    mDownloading.setVisibility(View.VISIBLE);
+                    mdownloadbutton.setText("Cancel");
+                    fab.setImageResource(R.drawable.ic_cancel);
+                    FileDownloadTask task = Download(Data, context);
+                    task.addOnCompleteListener(task1 -> {
+                        /*FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
+                        ft.detach(this);
+                        ft.attach(this);
+                        ft.commit();*/
+                    });
+                    fab.setOnClickListener(vv -> {
+                        task.cancel();
+                        /*FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
+                        ft.detach(this);
+                        ft.attach(this);
+                        ft.commit();*/
+                    });
+                    mdownloadbutton.setOnClickListener(vv -> {
+                        task.cancel();
+                        /*FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
+                        ft.detach(this);
+                        ft.attach(this);
+                        ft.commit();*/
+                    });
+                });
+                mdownloadbutton.setOnClickListener(v -> {
+                    mDownloading.setVisibility(View.VISIBLE);
+                    mdownloadbutton.setText("Cancel");
+                    fab.setImageResource(R.drawable.ic_cancel);
+                    FileDownloadTask task = Download(Data, context);
+                    task.addOnCompleteListener(task1 -> {
+                        /*FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
+                        ft.detach(this);
+                        ft.attach(this);
+                        ft.commit();*/
+                    });
+                    fab.setOnClickListener(vv -> {
+                        task.cancel();
+                        /*FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
+                        ft.detach(this);
+                        ft.attach(this);
+                        ft.commit();*/
+                    });
+                    mdownloadbutton.setOnClickListener(vv -> {
+                        task.cancel();
+                        /*FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
+                        ft.detach(this);
+                        ft.attach(this);
+                        ft.commit();*/
+                    });
+                });
+            }
 
 
         });

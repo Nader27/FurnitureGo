@@ -1,5 +1,6 @@
 package com.fcih.gp.furniturego;
 
+import com.wikitude.architect.ArchitectJavaScriptInterfaceListener;
 import com.wikitude.architect.ArchitectView;
 import com.wikitude.architect.ArchitectView.SensorAccuracyChangeListener;
 
@@ -15,6 +16,11 @@ public interface ArchitectViewHolderInterface {
 	 * @return
 	 */
 	String getARchitectWorldPath();
+
+    /**
+     * JS interface listener fired once e.g. 'AR.platform.sendJSONObject({foo:"bar", bar:123})' is called in JS
+     */
+    ArchitectJavaScriptInterfaceListener getArchitectJavaScriptInterfaceListener();
 
 	/**
 	 * @return layout id of your layout.xml that holds an ARchitect View, e.g. R.layout.camview

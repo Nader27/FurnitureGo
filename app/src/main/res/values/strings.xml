@@ -1,37 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Furniture Go</string>
-    <string name="main_title_urlLauncher">Launch World via url</string>
-    <string name="compass_accuracy_low">Please re-calibrate compass by waving your device in a figure 8 motion.</string>
-    <string name="location_fetching">Trying to find out where you are</string>
-    <string name="device_unsupported">This device is not supported</string>
-    <string name="videosrawables_fallback">VideoDrawables are rendered fullscreen on this device</string>
-    <string name="urllauncher_menu_clear_history">Clear history</string>
-    <string name="urllauncher_button_launch"> Launch </string>
-    <string name="poi_detail_title">Place Details</string>
-    <string name="urllauncher_hint_textfield">http://</string>
-    <string name="urllauncher_default_value_textfield">http://</string>
-    <string name="poi_name">Name</string>
-    <string name="poi_description">Description</string>
-    <string name="poi_id">ID</string>
-    <string name="title_activity_sample1_poi_detail">Sample 5.1 POI Detail</string>
-    <string name="footer">Sample App</string>
-    <string name="title_activity_login">Welcome</string>
 
-    <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password (optional)</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
+    <!-- Strings related to Facebook Login -->
     <string name="facebook_app_id">417065898640316</string>
     <string name="fb_login_protocol_scheme">fb417065898640316</string>
 
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_model">ModelActivity</string>
+    <!-- Strings related to Twitter Login -->
+    <string name="CONSUMER_KEY">CwPtz8jcgI71sIkfGXzGQwpLT</string>
+    <string name="CONSUMER_SECRET">mgCKDJXrZgUNnVxdxXtHh5Y7JWYUg0mifNXBqOXlOpdfdOT0T7</string>
+
     <!-- Strings related to login & registration -->
     <string name="User_Name">USERNAME</string>
     <string name="password">PASSWORD</string>
@@ -46,39 +24,14 @@
     <string name="already_have_account">ALREADY HAVE ACCOUNT</string>
     <string name="need_account">NEED ACCOUNT</string>
     <string name="forget_password">Forget Password ?!</string>
-    <string name="error_invalid_username">Invalid Username</string>
     <string name="error_field_required">Field Required</string>
     <string name="error_invalid_email">Invalid Email</string>
     <string name="error_invalid_password">Invalid Password</string>
     <string name="error_invalid_fullname">Invalid Name</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="title_activity_base">BaseActivity</string>
+    <string name="compass_accuracy_low">Please re-calibrate compass by waving your device in a figure 8 motion.</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-
-    <string name="action_settings">Settings</string>
-    <string name="gender">GENDER</string>
-    <string name="children">CHILDREN</string>
-    <string name="country">COUNTRY</string>
-    <string name="city">CITY</string>
-    <string name="birthday">BIRTHDATE</string>
-    <string name="error_invalid_cityorcountry">Invalid City or Country</string>
-    <string name="search">search</string>
-    <string name="need_description">Need Description</string>
-    <string name="need_name">Need Name</string>
-    <string name="add">Add</string>
-    <string name="needed">Needed</string>
-    <string name="have">Have</string>
-    <string name="Name">Name</string>
-    <string name="retype_email">ReType Email</string>
-    <string name="change_email">Change Email</string>
-    <string name="change_password">Change Password</string>
-    <string name="retype_password">ReType Password</string>
-    <string name="personal_info">Personal Info</string>
-    <string name="save">Save</string>
-    <string name="enter_your_email">Enter Your Email</string>
-    <string name="browse">Browse</string>
     <string name="empty_category">No Items In This Category</string>
+
 </resources>

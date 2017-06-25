@@ -8,8 +8,8 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +18,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -47,44 +44,59 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private FirebaseAuth mAuth;
     private RoundedImageView imageView;
     private BaseActivity activity;
+    private ViewGroup mcontainer;
 
     public ProfileFragment() {
-        mAuth = FirebaseAuth.getInstance();
-        // Required empty public constructor
     }
 
     public static ProfileFragment newInstance() {
-        ProfileFragment fragment = new ProfileFragment();
-        return fragment;
+        return new ProfileFragment();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        try {
+            FragmentTransaction ft = getActivity().getSupportFragmentManager()
+                    .beginTransaction();
+            ft.remove(this);
+            ft.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        View mview = inflater.inflate(R.layout.fragment_profile, container, false);
+        mcontainer = container;
+        mAuth = FirebaseAuth.getInstance();
         activity = (BaseActivity) getActivity();
-        mNameview = (TextView) view.findViewById(R.id.nameedit);
+        mNameview = (TextView) mview.findViewById(R.id.nameedit);
         mNameview.setText(mAuth.getCurrentUser().getDisplayName());
-        imageView = (RoundedImageView) view.findViewById(R.id.userimage);
+        imageView = (RoundedImageView) mview.findViewById(R.id.userimage);
+
         activity.findViewById(R.id.tabs).setVisibility(View.GONE);
-        activity.findViewById(R.id.toolbar).setVisibility(View.GONE);
-        TextView mEmailview = (TextView) view.findViewById(R.id.emailedit);
+        activity.getSupportActionBar().hide();
+
+        TextView mEmailview = (TextView) mview.findViewById(R.id.emailedit);
         mEmailview.setText(mAuth.getCurrentUser().getEmail());
         mEmailview.setEnabled(false);
-        TextView mPasswordview = (TextView) view.findViewById(R.id.passwordedit);
+        TextView mPasswordview = (TextView) mview.findViewById(R.id.passwordedit);
         mPasswordview.setEnabled(false);
-        RoundedImageView mPictureview = (RoundedImageView) view.findViewById(R.id.userimage);
         Picasso.with(getContext())
                 .load(mAuth.getCurrentUser().getPhotoUrl())
-                .resize(100, 100)//TODO:Fix later
-                .into(mPictureview);
-        view.findViewById(R.id.backimg).setOnClickListener(this);
-        view.findViewById(R.id.savetext).setOnClickListener(this);
-        view.findViewById(R.id.editpassword).setOnClickListener(this);
-        view.findViewById(R.id.editemail).setOnClickListener(this);
-        view.findViewById(R.id.Browsebutton).setOnClickListener(this);
-        return view;
+                .fit()
+                .into(imageView);
+
+        mview.findViewById(R.id.backimg).setOnClickListener(this);
+        mview.findViewById(R.id.savetext).setOnClickListener(this);
+        mview.findViewById(R.id.editpassword).setOnClickListener(this);
+        mview.findViewById(R.id.editemail).setOnClickListener(this);
+        mview.findViewById(R.id.Browsebutton).setOnClickListener(this);
+        return mview;
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -112,7 +124,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.backimg:
                 //region Back
-                activity.onNavigationItemSelected(activity.navigationView.getMenu().getItem(0));
+                activity.onBackPressed();
                 //endregion
                 break;
             case R.id.savetext:
@@ -121,40 +133,32 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     Uri file = Uri.fromFile(new File(picturePath));
                     StorageReference riversRef = storageRef.child("ProfileImage/" + file.getLastPathSegment());
                     UploadTask uploadTask = riversRef.putFile(file);
-                    uploadTask.addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    });
-                    uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                            try {
+                    uploadTask.addOnFailureListener(e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show());
+                    uploadTask.addOnCompleteListener(task -> {
+                        try {
 
-                                if (task.isSuccessful()) {
-                                    @SuppressWarnings("VisibleForTests") final Uri downloadUrl = task.getResult().getDownloadUrl();
-                                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                            .setDisplayName(mNameview.getText().toString())
-                                            .setPhotoUri(downloadUrl)
-                                            .build();
-                                    FirebaseUser user = mAuth.getCurrentUser();
-                                    user.updateProfile(profileUpdates);
-                                    FireBaseHelper.Users USER = new FireBaseHelper.Users();
-                                    USER.Findbykey(user.getUid(), Data -> {
-                                        Data.name = mNameview.getText().toString();
-                                        Data.image_uri = downloadUrl.toString();
-                                        Data.Update(Data.Key);
-                                        activity.onNavigationItemSelected(activity.navigationView.getMenu().getItem(0));
-                                    });
-                                }
-                            } catch (Exception e) {
-                                Toast.makeText(ProfileFragment.this.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                            if (task.isSuccessful()) {
+                                @SuppressWarnings("VisibleForTests") final Uri downloadUrl = task.getResult().getDownloadUrl();
+                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                        .setDisplayName(mNameview.getText().toString())
+                                        .setPhotoUri(downloadUrl)
+                                        .build();
+                                FirebaseUser user = mAuth.getCurrentUser();
+                                user.updateProfile(profileUpdates);
+                                FireBaseHelper.Users USER = new FireBaseHelper.Users();
+                                USER.Findbykey(user.getUid(), Data -> {
+                                    Data.name = mNameview.getText().toString();
+                                    Data.image_uri = downloadUrl.toString();
+                                    Data.Update(Data.Key);
+                                    activity.onNavigationItemSelected(activity.navigationView.getMenu().getItem(0));
+                                });
                             }
-                    /*} else {
-                            Toast.makeText(getContext(),task.getException().getMessage(),Toast.LENGTH_LONG).show();
-                        }*/
+                        } catch (Exception e) {
+                            Toast.makeText(ProfileFragment.this.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                         }
+                /*} else {
+                        Toast.makeText(getContext(),task.getException().getMessage(),Toast.LENGTH_LONG).show();
+                    }*/
                     });
                 } else {
                     UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
@@ -175,7 +179,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             case R.id.editpassword:
                 //region password form
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(activity);
-                View mView = activity.getLayoutInflater().inflate(R.layout.editpassword, null);
+                View mView = activity.getLayoutInflater().inflate(R.layout.editpassword, mcontainer);
                 Button mButton = (Button) mView.findViewById(R.id.doeditpassword);
                 mButton.setOnClickListener(this);
                 mBuilder.setView(mView);
@@ -186,7 +190,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             case R.id.editemail:
                 //region email form
                 AlertDialog.Builder mEBuilder = new AlertDialog.Builder(activity);
-                View mEView = activity.getLayoutInflater().inflate(R.layout.editemail, null);
+                View mEView = activity.getLayoutInflater().inflate(R.layout.editemail, mcontainer);
                 Button mEButton = (Button) mEView.findViewById(R.id.doeditemail);
                 mEButton.setOnClickListener(this);
                 mEBuilder.setView(mEView);

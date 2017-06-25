@@ -184,22 +184,10 @@
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/register_username"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/roundedtop"
-                    android:hint="@string/User_Name"
-                    android:inputType="text"
-                    android:padding="18dp"
-                    android:textColor="@color/white"
-                    android:textColorHint="@color/white"
-                    android:textSize="15sp" />
-
-                <EditText
                     android:id="@+id/register_full_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/grey_bg"
+                    android:background="@drawable/roundedtop"
                     android:hint="@string/full_name"
                     android:inputType="text"
                     android:padding="18dp"

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/white"
     android:fitsSystemWindows="true"
-    tools:context=".ModelActivity">
+    tools:context=".ModelFragment">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
@@ -24,10 +24,11 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <pl.droidsonroids.gif.GifImageView
+                android:id="@+id/gif"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-
-                android:background="@drawable/man" />
+                android:scaleType="fitCenter"
+                android:src="@drawable/loading" />
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -48,7 +49,7 @@
         android:layout_centerVertical="true"
         android:layout_gravity="center"
         android:indeterminate="false"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
     <include layout="@layout/content_model" />
 
@@ -57,6 +58,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
+        android:tint="@color/white"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end"
         app:srcCompat="@drawable/ic_download" />

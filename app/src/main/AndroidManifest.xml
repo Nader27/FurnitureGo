@@ -50,7 +50,6 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:resizeableActivity="false"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -60,18 +59,11 @@
         <!-- cam activities -->
         <activity
             android:name=".SampleCamActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize">
-        </activity>
+            android:configChanges="orientation|keyboardHidden|screenSize" />
 
         <activity
             android:name=".SampleCam2Activity"
-            android:configChanges="orientation|keyboardHidden|screenSize">
-        </activity>
-
-        <activity
-            android:name=".AutoHdSampleCamActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize">
-        </activity>
+            android:configChanges="orientation|keyboardHidden|screenSize" />
 
         <!-- App activities -->
         <activity android:name=".Splashscreen">
@@ -102,22 +94,11 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
-
-        <activity
-            android:name=".ModelActivity"
-            android:label="@string/title_activity_model"
-            android:parentActivityName=".BaseActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".BaseActivity" />
-        </activity>
 
     </application>
 
