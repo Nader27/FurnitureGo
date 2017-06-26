@@ -15,6 +15,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,22 +27,24 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.Query;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.builder.AnimateGifMode;
+import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -59,21 +66,26 @@ public class ModelFragment extends Fragment {
     private FloatingActionButton fab;
     private BaseActivity activity;
     private GifImageView mgifImageView;
-    private ProgressBar mdownloadprogressBar;
     private LinearLayout mDownloading;
-    private TextView mDownloadLog;
-    private TextView mDownloadpresentage;
-    private Button mdownloadbutton , mAddFeedback;
+    private Button mdownloadbutton;
+    private Button mAddFeedback;
     private TextView mNameView;
     private TextView mCompanyView;
     private TextView mSizeView;
     private ImageView mimageView;
+    private TextView mModelRate;
+    private TextView mModelFeedNum;
+    private RatingBar mModelStars;
+
     private CollapsingToolbarLayout mTitleBarView;
     private Context context;
-    private ArrayList<String> fdb , userFdbImg , Feeders, feedbackDate ;
-    private FeedbackItems adapter ;
-    private EditText getFeedback ;
-    private FirebaseAuth mFirebaseAuth ;
+    private EditText FeedbackText;
+    private RatingBar FeedbackRate;
+    private FirebaseAuth mAuth;
+    private StorageReference modelRef;
+    private RecyclerView recyclerView;
+    private FirebaseRecyclerAdapter<FireBaseHelper.Feedbacks, viewholder> mAdapter;
+    private RoundedImageView FeedUser;
 
 
     public ModelFragment() {
@@ -237,224 +249,271 @@ public class ModelFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_model, container, false);
+
+        ObjectKey = getArguments().getString(OBJECT_KEY);
+        storage = FirebaseStorage.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        context = getContext();
+        activity = (BaseActivity) getActivity();
+
         mProgressView = (ProgressBar) view.findViewById(R.id.progress);
         mLinearLayout = (LinearLayout) view.findViewById(R.id.container);
         mAppBarView = (AppBarLayout) view.findViewById(R.id.app_bar);
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
-        ObjectKey = getArguments().getString(OBJECT_KEY);
-        storage = FirebaseStorage.getInstance();
         mgifImageView = (GifImageView) view.findViewById(R.id.gif);
-        mdownloadprogressBar = (ProgressBar) view.findViewById(R.id.downloadprogressBar);
         mDownloading = (LinearLayout) view.findViewById(R.id.Downloading);
-        mDownloadLog = (TextView) view.findViewById(R.id.TextDownloadlog);
-        mDownloadpresentage = (TextView) view.findViewById(R.id.Textpresentage);
         mdownloadbutton = (Button) view.findViewById(R.id.Download);
         mNameView = (TextView) view.findViewById(R.id.Name_TextView);
         mCompanyView = (TextView) view.findViewById(R.id.Company_TextView);
         mSizeView = (TextView) view.findViewById(R.id.Size_TextView);
         mimageView = (ImageView) view.findViewById(R.id.model_imageView);
         mTitleBarView = (CollapsingToolbarLayout) view.findViewById(R.id.toolbar_layout);
-        context = getContext();
-        activity = (BaseActivity) getActivity();
+        recyclerView = (RecyclerView) view.findViewById(R.id.FeedbackList);
+        mModelRate = (TextView) view.findViewById(R.id.model_rate);
+        mModelFeedNum = (TextView) view.findViewById(R.id.model_feed_num);
+        mModelStars = (RatingBar) view.findViewById(R.id.model_stars);
+        mAddFeedback = (Button) view.findViewById(R.id.Submit_Button);
+        FeedbackText = (EditText) view.findViewById(R.id.User_Feedback);
+        FeedbackRate = (RatingBar) view.findViewById(R.id.User_Rate);
+        FeedUser = (RoundedImageView) view.findViewById(R.id.userimage);
+
         activity.getSupportActionBar().hide();
         activity.findViewById(R.id.tabs).setVisibility(View.GONE);
+
         showProgress(true);
+
+        IntializeFeedbacks();
+        IntializeUserFeedbacks();
         new FireBaseHelper.Objects().Findbykey(ObjectKey, Data -> {
+            modelRef = storage.getReferenceFromUrl(Data.model_path);
+            IntializeModel(Data);
+            IntializeDownload(Data);
+            showProgress(false);
+        });
 
-            Ion.with(context)
-                    .load(Data.image_path)
-                    .withBitmap()
-                    .placeholder(R.drawable.loading)
-                    .animateGif(AnimateGifMode.ANIMATE)
-                    .fitXY()
-                    .intoImageView(mimageView);
-            Ion.with(context)
-                    .load(Data.gif_path)
-                    .withBitmap()
-                    .placeholder(R.drawable.loading)
-                    .animateGif(AnimateGifMode.ANIMATE)
-                    .fitXY()
-                    .intoImageView(mgifImageView);
+        return view;
+    }
 
+    private void IntializeUserFeedbacks() {
+        Ion.with(context)
+                .load(mAuth.getCurrentUser().getPhotoUrl().toString())
+                .withBitmap()
+                .fitXY()
+                .intoImageView(FeedUser);
+        mAddFeedback.setEnabled(false);
 
-            fdb = new ArrayList<>() ;
-            userFdbImg = new ArrayList<>() ;
-            Feeders = new ArrayList<>() ;
-            feedbackDate = new ArrayList<>();
+        FeedbackText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-
-            //fdb.add("test");
-            ListView feedbacks = (ListView) activity.findViewById(R.id.FeedbackList) ;
-            new FireBaseHelper.Feedbacks().Where(FireBaseHelper.Feedbacks.Table.Object_id,ObjectKey, data->{
-                int i = 0 ;
-                for (FireBaseHelper.Feedbacks item:data) {
-                        fdb.add(item.feedback.toString());
-                        Feeders.add(item.users.getName());
-                        userFdbImg.add(item.users.getImage_uri());
-                        feedbackDate.add(item.getDate()) ;
-                    //Toast.makeText(activity,item.users.getImage_uri() ,Toast.LENGTH_SHORT).show();
-                }
-                adapter =  new FeedbackItems(activity,Feeders,fdb,userFdbImg,feedbackDate) ;
-                feedbacks.setAdapter(adapter);
-                //Toast.makeText(activity,Integer.toString(Feeders.size()),Toast.LENGTH_SHORT).show();
-            });
-
-
-            mCompanyView.setText(Data.companies.name);
-            mNameView.setText(Data.name);
-            mTitleBarView.setTitle(Data.name);
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            final StorageReference modelRef = storage.getReferenceFromUrl(Data.model_path);
-            modelRef.getMetadata().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    double kb = (double) task.getResult().getSizeBytes() / 1024;
-                    if (kb > 1000) {
-                        double mb = kb / 1024;
-                        mSizeView.setText(String.format(Locale.ENGLISH, "%.2fMB", mb));
-                    } else {
-                        mSizeView.setText(String.format(Locale.ENGLISH, "%.2fKB", kb));
-                    }
-                } else {
-                    Toast.makeText(context, task.getException().toString(), Toast.LENGTH_LONG).show();
-                }
-                showProgress(false);
-            });
-            File Dir = new File(Environment.getExternalStorageDirectory(), File.separator + "FurnitureGo" + File.separator + Data.Key);
-            if (Dir.exists()) {
-                if (modelRef.getActiveDownloadTasks().size() > 0) {
-                    mDownloading.setVisibility(View.VISIBLE);
-                    mdownloadbutton.setText("Cancel");
-                    fab.setImageResource(R.drawable.ic_cancel);
-                    FileDownloadTask task = modelRef.getActiveDownloadTasks().get(0);
-                    task.addOnCompleteListener(task1 -> {
-                        /*FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
-                        ft.detach(this);
-                        ft.attach(this);
-                        ft.commit();*/
-                    });
-                    fab.setOnClickListener(v -> {
-                        task.cancel();
-                        /*FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
-                        ft.detach(this);
-                        ft.attach(this);
-                        ft.commit();*/
-                    });
-                    mdownloadbutton.setOnClickListener(v -> {
-                        task.cancel();
-                        /*FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
-                        ft.detach(this);
-                        ft.attach(this);
-                        ft.commit();*/
-                    });
-                } else {
-                    fab.setImageResource(R.drawable.ic_delete);
-                    mdownloadbutton.setText("Delete");
-                    fab.setOnClickListener(v -> {
-                        Delete(Data.Key, context);
-                        mdownloadbutton.setText("Download");
-                        fab.setImageResource(R.drawable.ic_download);
-                        /*FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
-                        ft.detach(this);
-                        ft.attach(this);
-                        ft.commit();*/
-                    });
-                    mdownloadbutton.setOnClickListener(v -> {
-                        Delete(Data.Key, context);
-                        mdownloadbutton.setText("Download");
-                        fab.setImageResource(R.drawable.ic_download);
-                        /*FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
-                        ft.detach(this);
-                        ft.attach(this);
-                        ft.commit();*/
-                    });
-                }
-            } else {
-                fab.setOnClickListener(v -> {
-                    mDownloading.setVisibility(View.VISIBLE);
-                    mdownloadbutton.setText("Cancel");
-                    fab.setImageResource(R.drawable.ic_cancel);
-                    FileDownloadTask task = Download(Data, context);
-                    task.addOnCompleteListener(task1 -> {
-                        /*FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
-                        ft.detach(this);
-                        ft.attach(this);
-                        ft.commit();*/
-                    });
-                    fab.setOnClickListener(vv -> {
-                        task.cancel();
-                        /*FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
-                        ft.detach(this);
-                        ft.attach(this);
-                        ft.commit();*/
-                    });
-                    mdownloadbutton.setOnClickListener(vv -> {
-                        task.cancel();
-                        /*FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
-                        ft.detach(this);
-                        ft.attach(this);
-                        ft.commit();*/
-                    });
-                });
-                mdownloadbutton.setOnClickListener(v -> {
-                    mDownloading.setVisibility(View.VISIBLE);
-                    mdownloadbutton.setText("Cancel");
-                    fab.setImageResource(R.drawable.ic_cancel);
-                    FileDownloadTask task = Download(Data, context);
-                    task.addOnCompleteListener(task1 -> {
-                        /*FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
-                        ft.detach(this);
-                        ft.attach(this);
-                        ft.commit();*/
-                    });
-                    fab.setOnClickListener(vv -> {
-                        task.cancel();
-                        /*FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
-                        ft.detach(this);
-                        ft.attach(this);
-                        ft.commit();*/
-                    });
-                    mdownloadbutton.setOnClickListener(vv -> {
-                        task.cancel();
-                        /*FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
-                        ft.detach(this);
-                        ft.attach(this);
-                        ft.commit();*/
-                    });
-                });
             }
 
-            getFeedback = (EditText)activity.findViewById(R.id.FeedbackTxt);
-            mAddFeedback = (Button) activity.findViewById(R.id.addFeedback);
-            mAddFeedback.setOnClickListener(v -> {
-                FireBaseHelper.Feedbacks feedbacks1 = new FireBaseHelper.Feedbacks() ;
-                String feedbkTxt = getFeedback.getText().toString() ;
-                if (feedbkTxt.isEmpty()){
-                    Toast.makeText(activity,"You must enter your feedback first!",Toast.LENGTH_SHORT).show();
-                }
-                else{
-                    Calendar c = Calendar.getInstance();
-                    SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
-                    String formattedDate = df.format(c.getTime());
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                    mFirebaseAuth = FirebaseAuth.getInstance() ;
-                    String UserKey = mFirebaseAuth.getCurrentUser().getUid() ;
+            }
 
-                    int rate = 5 ;
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (TextUtils.isEmpty(editable.toString())) {
+                    mAddFeedback.setEnabled(false);
+                } else if (FeedbackRate.getRating() == 0) {
+                    mAddFeedback.setEnabled(false);
+                } else mAddFeedback.setEnabled(true);
+            }
+        });
 
-                    feedbacks1.setFeedback(feedbkTxt);
-                    feedbacks1.setDate(formattedDate);
-                    feedbacks1.setObject_id(ObjectKey);
-                    feedbacks1.setUid(UserKey);
-                    feedbacks1.setRate(Integer.toString(rate));
-
-                    feedbacks1.Add();
-
-
-                }
-            });
+        FeedbackRate.setOnRatingBarChangeListener((ratingBar, v, b) -> {
+            if (v == 0) {
+                mAddFeedback.setEnabled(false);
+            } else if (TextUtils.isEmpty(FeedbackText.getText().toString())) {
+                mAddFeedback.setEnabled(false);
+            } else mAddFeedback.setEnabled(true);
 
         });
-        return view;
+
+        mAddFeedback.setOnClickListener(view1 -> {
+            Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat Formater = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+            FireBaseHelper.Feedbacks feedbacks = new FireBaseHelper.Feedbacks();
+            feedbacks.date = Formater.format(calendar.getTime());
+            feedbacks.feedback = FeedbackText.getText().toString();
+            feedbacks.rate = String.valueOf((int) FeedbackRate.getRating());
+            feedbacks.uid = mAuth.getCurrentUser().getUid();
+            feedbacks.object_id = ObjectKey;
+            feedbacks.Add(ObjectKey + mAuth.getCurrentUser().getUid());
+            FeedbackText.setText("");
+            FeedbackRate.setRating(0);
+        });
+    }
+
+    private void IntializeModel(FireBaseHelper.Objects Data) {
+        Ion.with(context)
+                .load(Data.image_path)
+                .withBitmap()
+                .placeholder(R.drawable.loading)
+                .animateGif(AnimateGifMode.ANIMATE)
+                .fitXY()
+                .intoImageView(mimageView);
+        Ion.with(context)
+                .load(Data.gif_path)
+                .withBitmap()
+                .placeholder(R.drawable.loading)
+                .animateGif(AnimateGifMode.ANIMATE)
+                .fitXY()
+                .intoImageView(mgifImageView);
+
+        mCompanyView.setText(Data.companies.name);
+        mNameView.setText(Data.name);
+        mTitleBarView.setTitle(Data.name);
+
+        modelRef.getMetadata().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                double kb = (double) task.getResult().getSizeBytes() / 1024;
+                if (kb > 1000) {
+                    double mb = kb / 1024;
+                    mSizeView.setText(String.format(Locale.ENGLISH, "%.2fMB", mb));
+                } else {
+                    mSizeView.setText(String.format(Locale.ENGLISH, "%.2fKB", kb));
+                }
+            } else {
+                Toast.makeText(context, task.getException().toString(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void IntializeDownload(FireBaseHelper.Objects Data) {
+        File Dir = new File(Environment.getExternalStorageDirectory(), File.separator + "FurnitureGo" + File.separator + Data.Key);
+        if (Dir.exists()) {
+            if (modelRef.getActiveDownloadTasks().size() > 0) {
+                mDownloading.setVisibility(View.VISIBLE);
+                mdownloadbutton.setText("Cancel");
+                fab.setImageResource(R.drawable.ic_cancel);
+                FileDownloadTask task = modelRef.getActiveDownloadTasks().get(0);
+                task.addOnCompleteListener(task1 -> {
+                    //TODO:refresh
+                });
+                fab.setOnClickListener(v -> {
+                    task.cancel();
+                    //TODO:refresh
+                });
+                mdownloadbutton.setOnClickListener(v -> {
+                    task.cancel();
+                    //TODO:refresh
+                });
+            } else {
+                fab.setImageResource(R.drawable.ic_delete);
+                mdownloadbutton.setText("Delete");
+                fab.setOnClickListener(v -> {
+                    Delete(Data.Key, context);
+                    mdownloadbutton.setText("Download");
+                    fab.setImageResource(R.drawable.ic_download);
+                    //TODO:refresh
+                });
+                mdownloadbutton.setOnClickListener(v -> {
+                    Delete(Data.Key, context);
+                    mdownloadbutton.setText("Download");
+                    fab.setImageResource(R.drawable.ic_download);
+                    //TODO:refresh
+                });
+            }
+        } else {
+            fab.setOnClickListener(v -> {
+                mDownloading.setVisibility(View.VISIBLE);
+                mdownloadbutton.setText("Cancel");
+                fab.setImageResource(R.drawable.ic_cancel);
+                FileDownloadTask task = Download(Data, context);
+                task.addOnCompleteListener(task1 -> {
+                    //TODO:refresh
+                });
+                fab.setOnClickListener(vv -> {
+                    task.cancel();
+                    //TODO:refresh
+                });
+                mdownloadbutton.setOnClickListener(vv -> {
+                    task.cancel();
+                    //TODO:refresh
+                });
+            });
+            mdownloadbutton.setOnClickListener(v -> {
+                mDownloading.setVisibility(View.VISIBLE);
+                mdownloadbutton.setText("Cancel");
+                fab.setImageResource(R.drawable.ic_cancel);
+                FileDownloadTask task = Download(Data, context);
+                task.addOnCompleteListener(task1 -> {
+                    //TODO:refresh
+                });
+                fab.setOnClickListener(vv -> {
+                    task.cancel();
+                    //TODO:refresh
+                });
+                mdownloadbutton.setOnClickListener(vv -> {
+                    task.cancel();
+                    //TODO:refresh
+                });
+            });
+        }
+    }
+
+    private void IntializeFeedbacks() {
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        Query query = FireBaseHelper.Feedbacks.Ref.orderByChild(FireBaseHelper.Feedbacks.Table.Object_id.text).equalTo(ObjectKey);
+        mAdapter = new FirebaseRecyclerAdapter<FireBaseHelper.Feedbacks, viewholder>(
+                FireBaseHelper.Feedbacks.class, R.layout.feedback_item, viewholder.class, query) {
+            private int Counter = 0;
+            private int Sum = 0;
+
+            @Override
+            protected void populateViewHolder(viewholder viewholder, FireBaseHelper.Feedbacks feedbacks, int position) {
+                new FireBaseHelper.Feedbacks().Findbykey(mAdapter.getRef(position).getKey(), Data1 -> {
+                    viewholder.mDateView.setText(Data1.date);
+                    viewholder.mFeedbackView.setText(Data1.feedback);
+                    viewholder.mRateView.setRating(Float.parseFloat(Data1.rate));
+                    viewholder.mUserNameView.setText(Data1.users.name);
+                    viewholder.mDeleteView.setOnClickListener(view -> {
+                        Data1.Remove(Data1.Key);
+                    });
+                    if (Data1.uid.equals(mAuth.getCurrentUser().getUid())) {
+                        viewholder.mDeleteView.setVisibility(View.VISIBLE);
+                    }
+                    Ion.with(context)
+                            .load(Data1.users.image_uri)
+                            .withBitmap()
+                            .fitXY()
+                            .intoImageView(viewholder.mImageView);
+                    Sum += Integer.parseInt(Data1.rate);
+                    if (mAdapter.getItemCount() == ++Counter) {
+                        mModelFeedNum.setText(String.valueOf(mAdapter.getItemCount()));
+                        String rate = String.format(Locale.ENGLISH, "%.1f", (double) Sum / mAdapter.getItemCount());
+                        mModelRate.setText(rate);
+                        mModelStars.setRating((float) Sum / mAdapter.getItemCount());
+                    }
+                });
+
+            }
+        };
+        recyclerView.setAdapter(mAdapter);
+    }
+
+    public static class viewholder extends RecyclerView.ViewHolder {
+        public final View mView;
+        public final TextView mUserNameView;
+        public final TextView mDateView;
+        public final RatingBar mRateView;
+        public final RoundedImageView mImageView;
+        public final TextView mFeedbackView;
+        public final ImageView mDeleteView;
+
+        public viewholder(View view) {
+            super(view);
+            mView = view;
+            mUserNameView = (TextView) view.findViewById(R.id.feed_user_name);
+            mDateView = (TextView) view.findViewById(R.id.feed_date);
+            mRateView = (RatingBar) view.findViewById(R.id.feed_rate);
+            mImageView = (RoundedImageView) view.findViewById(R.id.feed_user_image);
+            mFeedbackView = (TextView) view.findViewById(R.id.feed_text);
+            mDeleteView = (ImageView) view.findViewById(R.id.feedback_delete);
+        }
     }
 
 }

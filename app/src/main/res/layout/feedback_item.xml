@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
     android:orientation="horizontal"
-    android:padding="10dp"
+    android:padding="5dp"
     android:weightSum="100">
 
     <com.makeramen.roundedimageview.RoundedImageView
@@ -67,4 +67,12 @@
             android:textAppearance="@style/TextAppearance.AppCompat" />
 
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/feedback_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_delete" />
+
 </LinearLayout>

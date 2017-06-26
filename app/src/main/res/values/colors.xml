@@ -3,9 +3,10 @@
     <color name="colorPrimary">#FFB97442</color>
     <color name="colorPrimaryDark">#FFAC5E25</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="Gray">#ACACAC</color>
+    <color name="Gray">#acacac</color>
     <color name="grey_bg">#4D000000</color>
     <color name="button_grey">#808080</color>
     <color name="transparency">#01c7c7c7</color>
     <color name="white">#FFF</color>
+    <color name="duskYellow">#DDD</color>
 </resources>

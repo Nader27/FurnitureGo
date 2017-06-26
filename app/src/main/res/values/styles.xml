@@ -42,4 +42,9 @@
         <item name="colorControlActivated">@color/cardview_dark_background</item>
     </style>
 
+    <style name="RatingBar2" parent="Theme.AppCompat">
+        <item name="colorControlNormal">@color/white</item>
+        <item name="colorControlActivated">@color/cardview_dark_background</item>
+    </style>
+
 </resources>

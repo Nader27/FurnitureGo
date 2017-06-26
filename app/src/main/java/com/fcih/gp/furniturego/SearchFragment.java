@@ -16,7 +16,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
@@ -35,7 +34,7 @@ public class SearchFragment extends Fragment {
 
     private static final String OBJECT_QUERY = "QUERY";
     private String query;
-    private FirebaseRecyclerAdapter<FireBaseHelper.Favorites, viewholder> mAdapter = null;
+    private RecyclerView.Adapter<viewholder> mAdapter = null;
     private RecyclerView recyclerView;
     private BaseActivity activity;
 
@@ -84,7 +83,8 @@ public class SearchFragment extends Fragment {
                 textView.setVisibility(View.VISIBLE);
                 //showProgress(false);
             } else {
-                RecyclerView.Adapter<viewholder> Adapter = new RecyclerView.Adapter<viewholder>() {
+
+                mAdapter = new RecyclerView.Adapter<viewholder>() {
                     @Override
                     public viewholder onCreateViewHolder(ViewGroup parent, int viewType) {
                         View itemView = LayoutInflater.from(parent.getContext())
@@ -156,7 +156,7 @@ public class SearchFragment extends Fragment {
                         return Data.size();
                     }
                 };
-                recyclerView.setAdapter(Adapter);
+                recyclerView.setAdapter(mAdapter);
             }
         });
         return view;

@@ -50,6 +50,7 @@ public class BaseActivity extends AppCompatActivity
         MissingDeviceFeatures missingDeviceFeatures = ArchitectView.isDeviceSupported(this,
                 ArchitectStartupConfiguration.Features.ImageTracking | ArchitectStartupConfiguration.Features.InstantTracking);
 
+        //if(false) {
         if (missingDeviceFeatures.areFeaturesMissing()) {
             AlertDialog alertDialog = new AlertDialog.Builder(this).create();
             alertDialog.setTitle("Sorry");
@@ -183,7 +184,6 @@ public class BaseActivity extends AppCompatActivity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(
                 new ComponentName(this, BaseActivity.class)
         ));
-        searchView.setSubmitButtonEnabled(true);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
