@@ -11,7 +11,7 @@
     <LinearLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
@@ -168,6 +168,29 @@
             android:background="#ACACAC" />
 
 
+        <ListView
+            android:id="@+id/FeedbackList"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scrollbars="vertical" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_margin="20dp"
+            android:background="#ACACAC" />
+
+        <EditText
+            android:id="@+id/FeedbackTxt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="Leave your feedback" />
+
+        <Button
+            android:id="@+id/addFeedback"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Submit" />
     </LinearLayout>
+
 
 </android.support.v4.widget.NestedScrollView>

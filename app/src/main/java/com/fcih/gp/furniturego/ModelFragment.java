@@ -19,12 +19,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -33,6 +36,9 @@ import com.koushikdutta.ion.builder.AnimateGifMode;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Locale;
 
 import pl.droidsonroids.gif.GifImageView;
@@ -57,13 +63,18 @@ public class ModelFragment extends Fragment {
     private LinearLayout mDownloading;
     private TextView mDownloadLog;
     private TextView mDownloadpresentage;
-    private Button mdownloadbutton;
+    private Button mdownloadbutton , mAddFeedback;
     private TextView mNameView;
     private TextView mCompanyView;
     private TextView mSizeView;
     private ImageView mimageView;
     private CollapsingToolbarLayout mTitleBarView;
     private Context context;
+    private ArrayList<String> fdb , userFdbImg , Feeders, feedbackDate ;
+    private FeedbackItems adapter ;
+    private EditText getFeedback ;
+    private FirebaseAuth mFirebaseAuth ;
+
 
     public ModelFragment() {
         // Required empty public constructor
@@ -264,6 +275,31 @@ public class ModelFragment extends Fragment {
                     .animateGif(AnimateGifMode.ANIMATE)
                     .fitXY()
                     .intoImageView(mgifImageView);
+
+
+            fdb = new ArrayList<>() ;
+            userFdbImg = new ArrayList<>() ;
+            Feeders = new ArrayList<>() ;
+            feedbackDate = new ArrayList<>();
+
+
+            //fdb.add("test");
+            ListView feedbacks = (ListView) activity.findViewById(R.id.FeedbackList) ;
+            new FireBaseHelper.Feedbacks().Where(FireBaseHelper.Feedbacks.Table.Object_id,ObjectKey, data->{
+                int i = 0 ;
+                for (FireBaseHelper.Feedbacks item:data) {
+                        fdb.add(item.feedback.toString());
+                        Feeders.add(item.users.getName());
+                        userFdbImg.add(item.users.getImage_uri());
+                        feedbackDate.add(item.getDate()) ;
+                    //Toast.makeText(activity,item.users.getImage_uri() ,Toast.LENGTH_SHORT).show();
+                }
+                adapter =  new FeedbackItems(activity,Feeders,fdb,userFdbImg,feedbackDate) ;
+                feedbacks.setAdapter(adapter);
+                //Toast.makeText(activity,Integer.toString(Feeders.size()),Toast.LENGTH_SHORT).show();
+            });
+
+
             mCompanyView.setText(Data.companies.name);
             mNameView.setText(Data.name);
             mTitleBarView.setTitle(Data.name);
@@ -387,6 +423,35 @@ public class ModelFragment extends Fragment {
                 });
             }
 
+            getFeedback = (EditText)activity.findViewById(R.id.FeedbackTxt);
+            mAddFeedback = (Button) activity.findViewById(R.id.addFeedback);
+            mAddFeedback.setOnClickListener(v -> {
+                FireBaseHelper.Feedbacks feedbacks1 = new FireBaseHelper.Feedbacks() ;
+                String feedbkTxt = getFeedback.getText().toString() ;
+                if (feedbkTxt.isEmpty()){
+                    Toast.makeText(activity,"You must enter your feedback first!",Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Calendar c = Calendar.getInstance();
+                    SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+                    String formattedDate = df.format(c.getTime());
+
+                    mFirebaseAuth = FirebaseAuth.getInstance() ;
+                    String UserKey = mFirebaseAuth.getCurrentUser().getUid() ;
+
+                    int rate = 5 ;
+
+                    feedbacks1.setFeedback(feedbkTxt);
+                    feedbacks1.setDate(formattedDate);
+                    feedbacks1.setObject_id(ObjectKey);
+                    feedbacks1.setUid(UserKey);
+                    feedbacks1.setRate(Integer.toString(rate));
+
+                    feedbacks1.Add();
+
+
+                }
+            });
 
         });
         return view;
