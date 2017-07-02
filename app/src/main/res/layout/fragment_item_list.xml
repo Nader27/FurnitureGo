@@ -10,10 +10,9 @@
     tools:context=".ItemFragment">
 
     <TextView
-        android:id="@+id/emptycategory"
+        android:id="@+id/empty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/empty_category"
         android:textSize="25sp"
         android:visibility="gone" />
 

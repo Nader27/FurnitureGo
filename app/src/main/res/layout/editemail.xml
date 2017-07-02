@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:gravity="center"
-        android:text="Change Email"
+        android:text="@string/change_email_title"
         android:textSize="25sp"
         android:textStyle="bold" />
 
@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:ems="10"
-        android:hint="Email"
+        android:hint="@string/email"
         android:inputType="textEmailAddress" />
 
     <EditText
@@ -28,13 +28,13 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:ems="10"
-        android:hint="ReType Email"
+        android:hint="@string/retype_email"
         android:inputType="textEmailAddress" />
 
     <Button
         android:id="@+id/doeditemail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Change Email" />
+        android:text="@string/submit" />
 
 </LinearLayout>

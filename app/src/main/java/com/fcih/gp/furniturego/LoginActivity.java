@@ -383,9 +383,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     } else {
                         final FirebaseUser user = task.getResult().getUser();
                         FireBaseHelper.Users FUSER = new FireBaseHelper.Users();
-                        FUSER.name = user.getDisplayName();
-                        FUSER.email = user.getEmail();
-                        FUSER.image_uri = user.getPhotoUrl().toString();
+                        FUSER.name = user.getDisplayName() != null ? user.getDisplayName() : "";
+                        FUSER.email = user.getEmail() != null ? user.getEmail() : "";
+                        FUSER.image_uri = user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : DEAFULT_IMAGE;
                         FUSER.type_id = DESIGNER_TYPE;
                         FUSER.Add(user.getUid());
                         showProgress(false);

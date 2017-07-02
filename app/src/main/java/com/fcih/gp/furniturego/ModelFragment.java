@@ -43,7 +43,6 @@ import com.koushikdutta.ion.builder.AnimateGifMode;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -55,7 +54,7 @@ import pl.droidsonroids.gif.GifImageView;
  */
 public class ModelFragment extends Fragment {
 
-    private static final String TAG = "ModelActivity";
+    public static final String TAG = "ModelFragment";
     private static final String OBJECT_KEY = "KEY";
     private static final int DOWNLOAD_PERMISSIONS_REQUEST_EXTERNAL_STORAGE = 1001;
     private String ObjectKey;
@@ -108,68 +107,64 @@ public class ModelFragment extends Fragment {
             FirebaseStorage storage = FirebaseStorage.getInstance();
             final StorageReference modelRef = storage.getReferenceFromUrl(Data.model_path);
             final StorageReference imageRef = storage.getReferenceFromUrl(Data.image_path);
-            try {
-                File Dir = new File(Environment.getExternalStorageDirectory(), File.separator + "FurnitureGo" + File.separator + Data.Key);
-                if (!Dir.exists())
-                    if (!Dir.mkdir()) {
-                        Toast.makeText(context, "Create Directory Error", Toast.LENGTH_LONG).show();
-                    }
-                File modelFile = File.createTempFile(Data.Key, ".wt3", Dir);
-                File imageFile = File.createTempFile(Data.Key, ".png", Dir);
-                imageRef.getFile(imageFile);
-                task = modelRef.getFile(modelFile);
-                task.addOnProgressListener(taskSnapshot -> {
-                    double data = taskSnapshot.getBytesTransferred();
-                    boolean mb = false;
+            File Dir = new File(Environment.getExternalStorageDirectory(), File.separator + "FurnitureGo" + File.separator + Data.Key + File.separator);
+            if (!Dir.exists())
+                if (!Dir.mkdirs()) {
+                    Toast.makeText(context, "Create Directory Error", Toast.LENGTH_LONG).show();
+                }
+            File modelFile = new File(Dir, Data.Key + ".wt3");
+            File imageFile = new File(Dir, Data.Key + ".png");
+            imageRef.getFile(imageFile);
+            task = modelRef.getFile(modelFile);
+            task.addOnProgressListener(taskSnapshot -> {
+                double data = taskSnapshot.getBytesTransferred();
+                boolean mb = false;
+                data /= 1024;
+                if (data > 1000) {
                     data /= 1024;
-                    if (data > 1000) {
-                        data /= 1024;
-                        mb = true;
-                    }
-                    String Transferred = String.format(Locale.ENGLISH, "%.2f" + (mb ? "MB" : "KB"), data);
-                    data = taskSnapshot.getTotalByteCount();
-                    mb = false;
+                    mb = true;
+                }
+                String Transferred = String.format(Locale.ENGLISH, "%.2f" + (mb ? "MB" : "KB"), data);
+                data = taskSnapshot.getTotalByteCount();
+                mb = false;
+                data /= 1024;
+                if (data > 1000) {
                     data /= 1024;
-                    if (data > 1000) {
-                        data /= 1024;
-                        mb = true;
-                    }
-                    String Total = String.format(Locale.ENGLISH, "%.2f" + (mb ? "MB" : "KB"), data);
-                    Activity activity = (Activity) context;
-                    if (activity.findViewById(R.id.TextDownloadlog) != null) {
-                        TextView textView = (TextView) activity.findViewById(R.id.TextDownloadlog);
-                        textView.setText(Transferred + "/" + Total);
-                    }
-                    if (activity.findViewById(R.id.Textpresentage) != null) {
-                        TextView textView = (TextView) activity.findViewById(R.id.Textpresentage);
-                        int presentage = (int) ((taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount()) * 100);
-                        textView.setText(presentage + "%");
-                    }
-                    if (activity.findViewById(R.id.downloadprogressBar) != null) {
-                        ProgressBar progressBar = (ProgressBar) activity.findViewById(R.id.downloadprogressBar);
-                        int presentage = (int) ((taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount()) * 100);
-                        progressBar.setProgress(presentage);
-                    }
-                });
-                task.addOnSuccessListener(taskSnapshot -> {
-                    Toast.makeText(context, "Download Complete", Toast.LENGTH_LONG).show();
-                    Activity activity = (Activity) context;
-                    if (activity.findViewById(R.id.TextDownloadlog) != null) {
-                        TextView textView = (TextView) activity.findViewById(R.id.TextDownloadlog);
-                        textView.setText("Download Success");
-                    }
-                });
-                task.addOnFailureListener(task1 -> {
-                    Toast.makeText(context, "Download Failed " + task1.getMessage(), Toast.LENGTH_LONG).show();
-                    Activity activity = (Activity) context;
-                    if (activity.findViewById(R.id.TextDownloadlog) != null) {
-                        TextView textView = (TextView) activity.findViewById(R.id.TextDownloadlog);
-                        textView.setText("Download Failed");
-                    }
-                });
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                    mb = true;
+                }
+                String Total = String.format(Locale.ENGLISH, "%.2f" + (mb ? "MB" : "KB"), data);
+                Activity activity = (Activity) context;
+                if (activity.findViewById(R.id.TextDownloadlog) != null) {
+                    TextView textView = (TextView) activity.findViewById(R.id.TextDownloadlog);
+                    textView.setText(Transferred + "/" + Total);
+                }
+                if (activity.findViewById(R.id.Textpresentage) != null) {
+                    TextView textView = (TextView) activity.findViewById(R.id.Textpresentage);
+                    int presentage = (int) ((taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount()) * 100);
+                    textView.setText(presentage + "%");
+                }
+                if (activity.findViewById(R.id.downloadprogressBar) != null) {
+                    ProgressBar progressBar = (ProgressBar) activity.findViewById(R.id.downloadprogressBar);
+                    int presentage = (int) ((taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount()) * 100);
+                    progressBar.setProgress(presentage);
+                }
+            });
+            task.addOnSuccessListener(taskSnapshot -> {
+                Toast.makeText(context, "Download Complete", Toast.LENGTH_LONG).show();
+                Activity activity = (Activity) context;
+                if (activity.findViewById(R.id.TextDownloadlog) != null) {
+                    TextView textView = (TextView) activity.findViewById(R.id.TextDownloadlog);
+                    textView.setText("Download Success");
+                }
+            });
+            task.addOnFailureListener(task1 -> {
+                Toast.makeText(context, "Download Failed " + task1.getMessage(), Toast.LENGTH_LONG).show();
+                Activity activity = (Activity) context;
+                if (activity.findViewById(R.id.TextDownloadlog) != null) {
+                    TextView textView = (TextView) activity.findViewById(R.id.TextDownloadlog);
+                    textView.setText("Download Failed");
+                }
+            });
         }
         return task;
     }
@@ -200,14 +195,7 @@ public class ModelFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        try {
-            FragmentTransaction ft = getActivity().getSupportFragmentManager()
-                    .beginTransaction();
-            ft.remove(this);
-            ft.commit();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        mAdapter.cleanup();
     }
 
     public void showProgress(final boolean show) {
@@ -282,19 +270,19 @@ public class ModelFragment extends Fragment {
 
         showProgress(true);
 
-        IntializeFeedbacks();
-        IntializeUserFeedbacks();
+        InitializeFeedback();
+        InitializeUserFeedback();
         new FireBaseHelper.Objects().Findbykey(ObjectKey, Data -> {
             modelRef = storage.getReferenceFromUrl(Data.model_path);
-            IntializeModel(Data);
-            IntializeDownload(Data);
+            InitializeModel(Data);
+            InitializeDownload(Data);
             showProgress(false);
         });
 
         return view;
     }
 
-    private void IntializeUserFeedbacks() {
+    private void InitializeUserFeedback() {
         Ion.with(context)
                 .load(mAuth.getCurrentUser().getPhotoUrl().toString())
                 .withBitmap()
@@ -347,18 +335,15 @@ public class ModelFragment extends Fragment {
         });
     }
 
-    private void IntializeModel(FireBaseHelper.Objects Data) {
+    private void InitializeModel(FireBaseHelper.Objects Data) {
         Ion.with(context)
                 .load(Data.image_path)
                 .withBitmap()
-                .placeholder(R.drawable.loading)
-                .animateGif(AnimateGifMode.ANIMATE)
                 .fitXY()
                 .intoImageView(mimageView);
         Ion.with(context)
                 .load(Data.gif_path)
                 .withBitmap()
-                .placeholder(R.drawable.loading)
                 .animateGif(AnimateGifMode.ANIMATE)
                 .fitXY()
                 .intoImageView(mgifImageView);
@@ -366,7 +351,7 @@ public class ModelFragment extends Fragment {
         mCompanyView.setText(Data.companies.name);
         mNameView.setText(Data.name);
         mTitleBarView.setTitle(Data.name);
-
+        mTitleBarView.setExpandedTitleColor(getResources().getColor(R.color.colorPrimary));
         modelRef.getMetadata().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 double kb = (double) task.getResult().getSizeBytes() / 1024;
@@ -382,7 +367,7 @@ public class ModelFragment extends Fragment {
         });
     }
 
-    private void IntializeDownload(FireBaseHelper.Objects Data) {
+    private void InitializeDownload(FireBaseHelper.Objects Data) {
         File Dir = new File(Environment.getExternalStorageDirectory(), File.separator + "FurnitureGo" + File.separator + Data.Key);
         if (Dir.exists()) {
             if (modelRef.getActiveDownloadTasks().size() > 0) {
@@ -391,15 +376,15 @@ public class ModelFragment extends Fragment {
                 fab.setImageResource(R.drawable.ic_cancel);
                 FileDownloadTask task = modelRef.getActiveDownloadTasks().get(0);
                 task.addOnCompleteListener(task1 -> {
-                    //TODO:refresh
+                    Refresh();
                 });
                 fab.setOnClickListener(v -> {
                     task.cancel();
-                    //TODO:refresh
+                    Refresh();
                 });
                 mdownloadbutton.setOnClickListener(v -> {
                     task.cancel();
-                    //TODO:refresh
+                    Refresh();
                 });
             } else {
                 fab.setImageResource(R.drawable.ic_delete);
@@ -408,13 +393,13 @@ public class ModelFragment extends Fragment {
                     Delete(Data.Key, context);
                     mdownloadbutton.setText("Download");
                     fab.setImageResource(R.drawable.ic_download);
-                    //TODO:refresh
+                    Refresh();
                 });
                 mdownloadbutton.setOnClickListener(v -> {
                     Delete(Data.Key, context);
                     mdownloadbutton.setText("Download");
                     fab.setImageResource(R.drawable.ic_download);
-                    //TODO:refresh
+                    Refresh();
                 });
             }
         } else {
@@ -424,15 +409,15 @@ public class ModelFragment extends Fragment {
                 fab.setImageResource(R.drawable.ic_cancel);
                 FileDownloadTask task = Download(Data, context);
                 task.addOnCompleteListener(task1 -> {
-                    //TODO:refresh
+                    Refresh();
                 });
                 fab.setOnClickListener(vv -> {
                     task.cancel();
-                    //TODO:refresh
+                    Refresh();
                 });
                 mdownloadbutton.setOnClickListener(vv -> {
                     task.cancel();
-                    //TODO:refresh
+                    Refresh();
                 });
             });
             mdownloadbutton.setOnClickListener(v -> {
@@ -441,21 +426,21 @@ public class ModelFragment extends Fragment {
                 fab.setImageResource(R.drawable.ic_cancel);
                 FileDownloadTask task = Download(Data, context);
                 task.addOnCompleteListener(task1 -> {
-                    //TODO:refresh
+                    Refresh();
                 });
                 fab.setOnClickListener(vv -> {
                     task.cancel();
-                    //TODO:refresh
+                    Refresh();
                 });
                 mdownloadbutton.setOnClickListener(vv -> {
                     task.cancel();
-                    //TODO:refresh
+                    Refresh();
                 });
             });
         }
     }
 
-    private void IntializeFeedbacks() {
+    private void InitializeFeedback() {
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         Query query = FireBaseHelper.Feedbacks.Ref.orderByChild(FireBaseHelper.Feedbacks.Table.Object_id.text).equalTo(ObjectKey);
         mAdapter = new FirebaseRecyclerAdapter<FireBaseHelper.Feedbacks, viewholder>(
@@ -475,6 +460,8 @@ public class ModelFragment extends Fragment {
                     });
                     if (Data1.uid.equals(mAuth.getCurrentUser().getUid())) {
                         viewholder.mDeleteView.setVisibility(View.VISIBLE);
+                    } else {
+                        viewholder.mDeleteView.setVisibility(View.GONE);
                     }
                     Ion.with(context)
                             .load(Data1.users.image_uri)
@@ -493,6 +480,15 @@ public class ModelFragment extends Fragment {
             }
         };
         recyclerView.setAdapter(mAdapter);
+    }
+
+    private void Refresh() {
+        Fragment frg = activity.getSupportFragmentManager().findFragmentByTag(TAG);
+        FragmentTransaction ft = getActivity().getSupportFragmentManager()
+                .beginTransaction();
+        ft.detach(frg);
+        ft.attach(frg);
+        ft.commit();
     }
 
     public static class viewholder extends RecyclerView.ViewHolder {

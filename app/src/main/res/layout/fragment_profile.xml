@@ -26,6 +26,7 @@
                     android:layout_width="50dp"
                     android:layout_height="30dp"
                     android:layout_marginLeft="20dp"
+                    android:contentDescription="@string/back_icon"
                     android:tint="@color/white"
                     app:srcCompat="@drawable/ic_arrow_back" />
 
@@ -34,8 +35,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="bottom"
-                    android:text="Personal Info"
-                    android:textColor="#fff"
+                    android:text="@string/profile_personal_info"
+                    android:textColor="@color/white"
                     android:textSize="20sp" />
 
                 <TextView
@@ -44,9 +45,9 @@
                     android:layout_height="30dp"
                     android:layout_gravity="end"
                     android:layout_marginRight="20dp"
-                    android:text="Save"
-                    android:textColor="#fff"
-                    android:textSize="14sp" />
+                    android:text="@string/profile_save"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
             </android.support.v7.widget.Toolbar>
 
             <LinearLayout
@@ -60,7 +61,6 @@
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:scaleType="fitStart"
-                    android:src="@drawable/com_facebook_profile_picture_blank_square"
                     app:riv_border_color="#333333"
                     app:riv_border_width="1dip"
                     app:riv_corner_radius="35dip"
@@ -84,16 +84,16 @@
             android:layout_marginLeft="10dp"
             android:layout_weight="25"
             android:padding="15dp"
-            android:text="Name"
+            android:text="@string/full_name"
             android:textSize="14sp" />
 
         <EditText
             android:id="@+id/nameedit"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="75"
             android:background="#00000000"
-            android:hint="Enter Your Name"
+            android:hint="@string/name_placeholder"
             android:inputType="textPhonetic"
             android:padding="16dp"
             android:textSize="14sp" />
@@ -117,7 +117,7 @@
             android:layout_weight="25"
             android:inputType="none"
             android:padding="15dp"
-            android:text="Email"
+            android:text="@string/email"
             android:textSize="14sp" />
 
         <EditText
@@ -126,7 +126,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="50"
             android:editable="false"
-            android:hint="Enter Your Email"
+            android:hint="@string/email_placeholder"
             android:inputType="none|textEmailAddress"
             android:padding="16dp"
             android:textSize="14sp" />
@@ -136,6 +136,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="25"
+            android:contentDescription="@string/edit_icon"
             app:srcCompat="@drawable/ic_edit_dp" />
     </LinearLayout>
 
@@ -156,7 +157,7 @@
             android:layout_marginLeft="10dp"
             android:layout_weight="25"
             android:padding="15dp"
-            android:text="Password"
+            android:text="@string/password"
             android:textSize="14sp" />
 
         <EditText
@@ -165,7 +166,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="50"
             android:editable="false"
-            android:hint="**********"
+            android:hint="@string/password_placeholder"
             android:inputType="none|textPassword"
             android:padding="15dp"
             android:textSize="14sp" />
@@ -175,7 +176,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="25"
-            android:contentDescription="edit"
+            android:contentDescription="@string/edit_icon"
             app:srcCompat="@drawable/ic_edit_dp" />
     </LinearLayout>
 
@@ -196,7 +197,7 @@
             android:layout_marginLeft="10dp"
             android:layout_weight="25"
             android:padding="15dp"
-            android:text="Picture"
+            android:text="@string/picture"
             android:textSize="14sp" />
 
         <Button
@@ -204,7 +205,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="75"
-            android:text="Browse" />
+            android:text="@string/browse" />
 
     </LinearLayout>
 

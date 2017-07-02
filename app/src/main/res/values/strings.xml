@@ -11,16 +11,12 @@
     <string name="CONSUMER_SECRET">mgCKDJXrZgUNnVxdxXtHh5Y7JWYUg0mifNXBqOXlOpdfdOT0T7</string>
 
     <!-- Strings related to login & registration -->
-    <string name="User_Name">USERNAME</string>
     <string name="password">PASSWORD</string>
     <string name="sign_in">SIGNIN</string>
-    <string name="full_name">FULL NAME</string>
+    <string name="full_name">NAME</string>
     <string name="email">EMAIL</string>
     <string name="sign_up">SIGNUP</string>
     <string name="or">OR</string>
-    <string name="google_icon">Google Icon</string>
-    <string name="twitter_icon">Twitter Icon</string>
-    <string name="facebook_icon">Facebook Icon</string>
     <string name="already_have_account">ALREADY HAVE ACCOUNT</string>
     <string name="need_account">NEED ACCOUNT</string>
     <string name="forget_password">Forget Password ?!</string>
@@ -28,10 +24,54 @@
     <string name="error_invalid_email">Invalid Email</string>
     <string name="error_invalid_password">Invalid Password</string>
     <string name="error_invalid_fullname">Invalid Name</string>
+    <string name="profile_personal_info">Personal Info</string>
+    <string name="profile_save">SAVE</string>
+    <string name="name_placeholder">Enter Your Name</string>
+    <string name="email_placeholder">Enter Your Email</string>
+    <string name="password_placeholder">**********</string>
+    <string name="picture">IMAGE</string>
+    <string name="browse">Browse</string>
+
     <string name="compass_accuracy_low">Please re-calibrate compass by waving your device in a figure 8 motion.</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="empty_category">No Items In This Category</string>
+
+    <!-- Strings related to Image Description -->
+    <string name="logo_image">Logo Image</string>
+    <string name="google_icon">Google Icon</string>
+    <string name="twitter_icon">Twitter Icon</string>
+    <string name="facebook_icon">Facebook Icon</string>
+    <string name="edit_icon">Edit Icon</string>
+    <string name="back_icon">Back Icon</string>
+    <string name="title_image">Title Image</string>
+    <string name="delete_icon">Delete icon</string>
+    <string name="dots_icon">Dots Icon</string>
+    <string name="model_image">Model Image</string>
+
+    <string name="downloading">Downloading …</string>
+    <string name="rate_this_model">Rate This Model</string>
+    <string name="leave_your_feedback">Leave your feedback</string>
+    <string name="submit">Submit</string>
+    <string name="change_email_title">Change Email</string>
+    <string name="retype_email">ReType Email</string>
+    <string name="change_password_title">Change Password</string>
+    <string name="retype_password">ReType Password</string>
+
+    <string name="home">Home</string>
+    <string name="start_design">Start Design</string>
+    <string name="my_account">My Account</string>
+    <string name="my_models">My Models</string>
+    <string name="wishlist">Wishlist</string>
+    <string name="settings">Settings</string>
+    <string name="logout">Logout</string>
+    <string name="search">Search</string>
+    <string name="download">Download</string>
+    <string name="delete">Delete</string>
+    <string name="add_to_whishlist">Add To Whishlist</string>
+    <string name="remove_from_whishlist">Remove From Whishlist</string>
+    <string name="empty_whishlist">Your WishList Is Empty</string>
+    <string name="empty_model">Your Don\'t Have any Model</string>
 
 </resources>

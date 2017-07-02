@@ -25,10 +25,9 @@
                 android:id="@+id/model_imageView"
                 android:layout_width="0dp"
                 android:layout_height="100dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginEnd="16dp"
                 android:layout_weight="30"
-                android:contentDescription="TitleImage"
-                android:src="@drawable/ic_3d_image" />
+                android:contentDescription="@string/title_image" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -43,22 +42,19 @@
                     android:layout_height="0dp"
                     android:layout_weight="50"
                     android:paddingTop="5dp"
-                    android:text="Name"
                     android:textSize="25sp" />
 
                 <TextView
                     android:id="@+id/Company_TextView"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
-                    android:layout_weight="25"
-                    android:text="Company" />
+                    android:layout_weight="25" />
 
                 <TextView
                     android:id="@+id/Size_TextView"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
-                    android:layout_weight="25"
-                    android:text="Size" />
+                    android:layout_weight="25" />
             </LinearLayout>
         </LinearLayout>
 
@@ -87,7 +83,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="80"
-                        android:text="Downloading ..." />
+                        android:text="@string/downloading" />
 
                     <TextView
                         android:id="@+id/Textpresentage"
@@ -113,7 +109,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="35"
-                android:text="Download" />
+                android:text="@string/download" />
 
         </LinearLayout>
 
@@ -133,7 +129,6 @@
                 android:id="@+id/model_rate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="3.5"
                 android:textSize="50sp" />
 
             <LinearLayout
@@ -149,14 +144,12 @@
                     android:layout_height="wrap_content"
                     android:editable="false"
                     android:numStars="5"
-                    android:rating="3.5"
                     android:theme="@style/RatingBar" />
 
                 <TextView
                     android:id="@+id/model_feed_num"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="100,000"
                     android:textSize="18sp" />
             </LinearLayout>
 
@@ -181,7 +174,6 @@
                 android:layout_height="70dp"
                 android:layout_gravity="center"
                 android:layout_weight="10"
-                android:src="@drawable/com_facebook_profile_picture_blank_portrait"
                 app:riv_corner_radius="35dip"
                 app:riv_mutate_background="true"
                 app:riv_oval="true"
@@ -193,7 +185,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:padding="15dp"
-                android:text="Rate This Model"
+                android:text="@string/rate_this_model"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textSize="18sp" />
 
@@ -216,14 +208,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:hint="Leave your feedback" />
+                android:hint="@string/leave_your_feedback" />
 
             <Button
                 android:id="@+id/Submit_Button"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Submit" />
+                android:text="@string/submit" />
         </LinearLayout>
 
         <View

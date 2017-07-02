@@ -21,7 +21,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_marginRight="16dp"
-            android:src="@drawable/ic_3d_image" />
+            android:contentDescription="@string/model_image" />
 
         <TextView
             android:id="@+id/item_title"
@@ -30,7 +30,6 @@
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/item_image"
             android:paddingTop="5dp"
-            android:text="Name"
             android:textColor="@android:color/white"
             android:textSize="25sp" />
 
@@ -40,7 +39,6 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/item_title"
             android:layout_toRightOf="@+id/item_image"
-            android:text="Company"
             android:textColor="@android:color/white" />
 
         <TextView
@@ -49,7 +47,6 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/item_company"
             android:layout_toRightOf="@+id/item_image"
-            android:text="4.0★"
             android:textColor="@android:color/white" />
 
         <ImageButton
@@ -59,6 +56,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:background="@null"
+            android:contentDescription="@string/dots_icon"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
             android:tint="@android:color/white"

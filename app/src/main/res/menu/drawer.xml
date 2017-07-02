@@ -5,30 +5,30 @@
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_home"
-            android:title="Home" />
+            android:title="@string/home" />
         <item
             android:id="@+id/nav_camera"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Start Design" />
+            android:title="@string/start_design" />
         <item
             android:id="@+id/nav_account"
             android:icon="@drawable/ic_account"
-            android:title="My Account" />
+            android:title="@string/my_account" />
         <item
             android:id="@+id/nav_models"
             android:icon="@drawable/ic_bubble_chart"
-            android:title="My Models" />
+            android:title="@string/my_models" />
         <item
             android:id="@+id/nav_whishlist"
             android:icon="@drawable/ic_bookmark"
-            android:title="Wishlist" />
+            android:title="@string/wishlist" />
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_settings"
-            android:title="Settings" />
+            android:title="@string/settings" />
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_logout"
-            android:title="Logout" />
+            android:title="@string/logout" />
     </group>
 </menu>

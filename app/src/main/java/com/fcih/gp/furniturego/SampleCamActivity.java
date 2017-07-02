@@ -145,7 +145,9 @@ public class SampleCamActivity extends AbstractArchitectCamActivity {
     protected void saveScreenCaptureToExternalStorage(Bitmap screenCapture) {
         if ( screenCapture != null ) {
             // store screenCapture into external cache directory
-            final File screenCaptureFile = new File(Environment.getExternalStorageDirectory().toString() + File.separator + "FurnitureGo ScreenShots" + File.separator, "Shoot_" + System.currentTimeMillis() + ".jpg");
+            File Dir = new File(Environment.getExternalStorageDirectory().toString() + File.separator + "FurnitureGo ScreenShots" + File.separator);
+            Dir.mkdirs();
+            final File screenCaptureFile = new File(Dir, "Shoot_" + System.currentTimeMillis() + ".jpg");
 
             // 1. Save bitmap to file & compress to jpeg. You may use PNG too
             try {
@@ -168,7 +170,7 @@ public class SampleCamActivity extends AbstractArchitectCamActivity {
                 // should not occur when all permissions are set
                 SampleCamActivity.this.runOnUiThread(() -> {
                     // show toast message in case something went wrong
-                    Toast.makeText(SampleCamActivity.this, "Unexpected error, " + e, Toast.LENGTH_LONG).show();
+                    Toast.makeText(SampleCamActivity.this, "Unexpected error, " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
             }
         }

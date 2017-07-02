@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
     <item
         android:id="@+id/action_search"
-        android:title="Search"
         android:icon="@drawable/ic_search"
-        app:showAsAction="ifRoom|collapseActionView"
+        android:title="@string/search"
         app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="ifRoom|collapseActionView"
         tools:ignore="AppCompatResource"/>
 </menu>

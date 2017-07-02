@@ -294,6 +294,7 @@ var World = {
                 allModelImgSources.push(paths[i].image);
 
             }
+            $('#sidebar').hide();
             $("#inputs").empty();
             for (var i = 0; i < allModelImgSources.length; i++) {
                 $("#inputs").append("<input data-id=" + i + " class='tracking-model-button list-group-item' type='image' src=" + allModelImgSources[i] + " />");

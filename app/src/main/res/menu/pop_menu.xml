@@ -3,18 +3,23 @@
     <item
         android:id="@+id/item_download"
         android:orderInCategory="100"
-        android:title="Download" />
-
-    <item
-        android:id="@+id/item_favorite"
-        android:orderInCategory="101"
-        android:title="Add To Favorite"/>
+        android:title="@string/download" />
 
     <item
         android:id="@+id/item_delete"
-        android:orderInCategory="102"
-        android:visible="false"
-        android:title="Delete"/>
+        android:orderInCategory="100"
+        android:title="@string/delete"
+        android:visible="false" />
 
+    <item
+        android:id="@+id/item_Whishlist"
+        android:orderInCategory="101"
+        android:title="@string/add_to_whishlist" />
+
+    <item
+        android:id="@+id/item_remove_Whishlist"
+        android:orderInCategory="101"
+        android:title="@string/remove_from_whishlist"
+        android:visible="false" />
 
 </menu>

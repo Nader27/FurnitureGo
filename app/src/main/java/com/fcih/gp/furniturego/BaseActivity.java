@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -41,8 +42,9 @@ public class BaseActivity extends AppCompatActivity
     protected NavigationView navigationView;
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
-    private FirebaseAuth mAuth;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private ProfileFragment profileFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +52,8 @@ public class BaseActivity extends AppCompatActivity
         MissingDeviceFeatures missingDeviceFeatures = ArchitectView.isDeviceSupported(this,
                 ArchitectStartupConfiguration.Features.ImageTracking | ArchitectStartupConfiguration.Features.InstantTracking);
 
-        //if(false) {
-        if (missingDeviceFeatures.areFeaturesMissing()) {
+        if (false) {
+            //if (missingDeviceFeatures.areFeaturesMissing()) {
             AlertDialog alertDialog = new AlertDialog.Builder(this).create();
             alertDialog.setTitle("Sorry");
             alertDialog.setMessage("Sorry Your Device Is Not Supported." + missingDeviceFeatures.getMissingFeatureMessage());
@@ -61,10 +63,9 @@ public class BaseActivity extends AppCompatActivity
                         dialog.dismiss();
                     });
             alertDialog.show();
+            finish();
         } else {
             setContentView(R.layout.activity_base);
-            mAuth = FirebaseAuth.getInstance();
-            mAuth = FirebaseAuth.getInstance();
             if (mAuth.getCurrentUser() == null) {
                 Log.e(TAG, "User is signed out");
                 Intent loginIntent = new Intent(BaseActivity.this, LoginActivity.class);
@@ -181,6 +182,7 @@ public class BaseActivity extends AppCompatActivity
         MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        final ImageView mCloseButton = (ImageView) searchView.findViewById(android.support.v7.appcompat.R.id.search_close_btn);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(
                 new ComponentName(this, BaseActivity.class)
         ));
@@ -188,7 +190,7 @@ public class BaseActivity extends AppCompatActivity
             @Override
             public boolean onQueryTextSubmit(String query) {
                 SearchFragment fragment = SearchFragment.newInstance(query);
-                getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).addToBackStack(null).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment, SearchFragment.TAG).commit();
                 return true;
             }
 
@@ -219,8 +221,8 @@ public class BaseActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            HomeFragment home = HomeFragment.newInstance();
-            getSupportFragmentManager().beginTransaction().replace(R.id.flContent, home).commit();
+            HomeFragment fragment = HomeFragment.newInstance();
+            getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment, HomeFragment.TAG).addToBackStack(null).commit();
         } else if (id == R.id.nav_camera) {
             PermissionManager mPermissionManager = ArchitectView.getPermissionManager();
             String[] permissions = new String[]{android.Manifest.permission.CAMERA, android.Manifest.permission.READ_EXTERNAL_STORAGE};
@@ -254,14 +256,14 @@ public class BaseActivity extends AppCompatActivity
                 }
             });
         } else if (id == R.id.nav_account) {
-            ProfileFragment profile = ProfileFragment.newInstance();
-            getSupportFragmentManager().beginTransaction().replace(R.id.flContent, profile).addToBackStack(null).commit();
+            profileFragment = ProfileFragment.newInstance();
+            getSupportFragmentManager().beginTransaction().replace(R.id.flContent, profileFragment, ProfileFragment.TAG).addToBackStack(null).commit();
         } else if (id == R.id.nav_models) {
             MyModelsFragment fragment = MyModelsFragment.newInstance();
-            getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment).addToBackStack(null).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment, MyModelsFragment.TAG).addToBackStack(null).commit();
         } else if (id == R.id.nav_whishlist) {
-            FavFragment fav = FavFragment.newInstance();
-            getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fav).addToBackStack(null).commit();
+            FavFragment fragment = FavFragment.newInstance();
+            getSupportFragmentManager().beginTransaction().replace(R.id.flContent, fragment, FavFragment.TAG).addToBackStack(null).commit();
         } else if (id == R.id.nav_settings) {
 
         } else if (id == R.id.nav_logout) {
@@ -275,4 +277,19 @@ public class BaseActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (profileFragment != null) {
+            profileFragment.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (profileFragment != null) {
+            profileFragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
 }

@@ -5,7 +5,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +16,7 @@ import java.util.List;
 
 public class HomeFragment extends Fragment {
 
+    public static final String TAG = "HomeFragment";
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ProgressBar mProgressView;
     private ViewGroup mContainer;
@@ -36,19 +36,6 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        try {
-            FragmentTransaction ft = getActivity().getSupportFragmentManager()
-                    .beginTransaction();
-            ft.remove(this);
-            ft.commit();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -62,11 +49,9 @@ public class HomeFragment extends Fragment {
         new FireBaseHelper.Categories().Tolist(Data -> {
             Categories = Data;
             ViewPager mViewPager = (ViewPager) view.findViewById(R.id.container);
-            mSectionsPagerAdapter = new SectionsPagerAdapter(activity.getSupportFragmentManager());
+            mSectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
             // Set up the ViewPager with the sections adapter.
-
             mViewPager.setAdapter(mSectionsPagerAdapter);
-
             TabLayout tabLayout = (TabLayout) activity.findViewById(R.id.tabs);
             tabLayout.setVisibility(View.VISIBLE);
             tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);

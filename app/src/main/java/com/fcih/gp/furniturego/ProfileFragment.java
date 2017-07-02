@@ -2,12 +2,12 @@ package com.fcih.gp.furniturego;
 
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.BitmapFactory;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
@@ -26,6 +26,8 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.Picasso;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.File;
 
@@ -33,10 +35,12 @@ import static android.app.Activity.RESULT_OK;
 
 public class ProfileFragment extends Fragment implements View.OnClickListener {
 
+    public static final String TAG = "ProfileFragment";
     private static int RESULT_LOAD_IMAGE = 1;
+    private static boolean WAITINGFORIMAGE = false;
     private TextView mNameview;
-    private boolean profilechange = false;
-    private String picturePath;
+    private Uri imageUri;
+    private Uri ImageURI;
     private FirebaseStorage storage = FirebaseStorage.getInstance();
     private StorageReference storageRef = storage.getReference();
     private AlertDialog dialog;
@@ -44,7 +48,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private FirebaseAuth mAuth;
     private RoundedImageView imageView;
     private BaseActivity activity;
-    private ViewGroup mcontainer;
+    private Context context;
 
     public ProfileFragment() {
     }
@@ -71,13 +75,13 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View mview = inflater.inflate(R.layout.fragment_profile, container, false);
-        mcontainer = container;
         mAuth = FirebaseAuth.getInstance();
+        context = getContext();
         activity = (BaseActivity) getActivity();
+        ImageURI = null;
         mNameview = (TextView) mview.findViewById(R.id.nameedit);
         mNameview.setText(mAuth.getCurrentUser().getDisplayName());
         imageView = (RoundedImageView) mview.findViewById(R.id.userimage);
-
         activity.findViewById(R.id.tabs).setVisibility(View.GONE);
         activity.getSupportActionBar().hide();
 
@@ -86,7 +90,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         mEmailview.setEnabled(false);
         TextView mPasswordview = (TextView) mview.findViewById(R.id.passwordedit);
         mPasswordview.setEnabled(false);
-        Picasso.with(getContext())
+        Picasso.with(context)
                 .load(mAuth.getCurrentUser().getPhotoUrl())
                 .fit()
                 .into(imageView);
@@ -101,24 +105,56 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
-            Uri selectedImage = data.getData();
-            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+        if (requestCode == CropImage.PICK_IMAGE_CHOOSER_REQUEST_CODE && resultCode == RESULT_OK && WAITINGFORIMAGE) {
+            imageUri = CropImage.getPickImageResultUri(context, data);
 
-            Cursor cursor = activity.getContentResolver().query(selectedImage,
-                    filePathColumn, null, null, null);
-            cursor.moveToFirst();
-
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            picturePath = cursor.getString(columnIndex);
-            cursor.close();
-
-            profilechange = true;
-
-            imageView.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+            // For API >= 23 we need to check specifically that we have permissions to read external storage.
+            if (CropImage.isReadExternalStoragePermissionsRequired(context, imageUri)) {
+                // request permissions and handle the result in onRequestPermissionsResult()
+                requestPermissions(new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, CropImage.PICK_IMAGE_PERMISSIONS_REQUEST_CODE);
+            } else {
+                // no permissions required or already grunted, can start crop image activity
+                CropImage.activity(imageUri).setCropShape(CropImageView.CropShape.RECTANGLE).setFixAspectRatio(true)
+                        .start(activity);
+                //baby_image.setImageURI(imageUri);
+                ImageURI = imageUri;
+            }
+        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && WAITINGFORIMAGE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                Uri resultUri = result.getUri();
+                imageView.setImageURI(resultUri);
+                ImageURI = resultUri;
+                WAITINGFORIMAGE = false;
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Toast.makeText(context, result.getError().getMessage(), Toast.LENGTH_LONG).show();
+                WAITINGFORIMAGE = false;
+            }
+        } else if (requestCode == 0) {
+            WAITINGFORIMAGE = false;
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        if (requestCode == CropImage.CAMERA_CAPTURE_PERMISSIONS_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                CropImage.activity(imageUri).setCropShape(CropImageView.CropShape.RECTANGLE).setFixAspectRatio(true)
+                        .start(activity);
+            } else {
+                Toast.makeText(context, "Cancelling, required permissions are not granted", Toast.LENGTH_LONG).show();
+            }
+        }
+        if (requestCode == CropImage.PICK_IMAGE_PERMISSIONS_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // required permissions granted, start crop image activity
+                CropImage.activity(imageUri).setCropShape(CropImageView.CropShape.RECTANGLE).setFixAspectRatio(true)
+                        .start(activity);
+            } else {
+                Toast.makeText(context, "Cancelling, required permissions are not granted", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -129,11 +165,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.savetext:
                 //region Save
-                if (profilechange) {
-                    Uri file = Uri.fromFile(new File(picturePath));
+                if (ImageURI != null) {
+                    Uri file = Uri.fromFile(new File(ImageURI.toString()));
                     StorageReference riversRef = storageRef.child("ProfileImage/" + file.getLastPathSegment());
                     UploadTask uploadTask = riversRef.putFile(file);
-                    uploadTask.addOnFailureListener(e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show());
+                    uploadTask.addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show());
                     uploadTask.addOnCompleteListener(task -> {
                         try {
 
@@ -154,10 +190,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                                 });
                             }
                         } catch (Exception e) {
-                            Toast.makeText(ProfileFragment.this.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
                         }
                 /*} else {
-                        Toast.makeText(getContext(),task.getException().getMessage(),Toast.LENGTH_LONG).show();
+                        Toast.makeText(context,task.getException().getMessage(),Toast.LENGTH_LONG).show();
                     }*/
                     });
                 } else {
@@ -179,7 +215,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             case R.id.editpassword:
                 //region password form
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(activity);
-                View mView = activity.getLayoutInflater().inflate(R.layout.editpassword, mcontainer);
+                View mView = activity.getLayoutInflater().inflate(R.layout.editpassword, null);
                 Button mButton = (Button) mView.findViewById(R.id.doeditpassword);
                 mButton.setOnClickListener(this);
                 mBuilder.setView(mView);
@@ -190,7 +226,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             case R.id.editemail:
                 //region email form
                 AlertDialog.Builder mEBuilder = new AlertDialog.Builder(activity);
-                View mEView = activity.getLayoutInflater().inflate(R.layout.editemail, mcontainer);
+                View mEView = activity.getLayoutInflater().inflate(R.layout.editemail, null);
                 Button mEButton = (Button) mEView.findViewById(R.id.doeditemail);
                 mEButton.setOnClickListener(this);
                 mEBuilder.setView(mEView);
@@ -206,21 +242,21 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     if (mpassword.getText().toString().equals(mrepassword.getText().toString())) {
                         mAuth.getCurrentUser().updatePassword(mpassword.getText().toString()).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
-                                Toast.makeText(getContext(),
+                                Toast.makeText(context,
                                         "Password Changed Successfully",
                                         Toast.LENGTH_LONG).show();
                                 dialog.dismiss();
                             } else
-                                Toast.makeText(getContext(),
+                                Toast.makeText(context,
                                         task.getException().getMessage(),
                                         Toast.LENGTH_LONG).show();
                         });
                     } else
-                        Toast.makeText(getContext(),
+                        Toast.makeText(context,
                                 "Password Not Matched",
                                 Toast.LENGTH_LONG).show();
                 } else
-                    Toast.makeText(getContext(),
+                    Toast.makeText(context,
                             "Password Field is Empty",
                             Toast.LENGTH_LONG).show();
                 //endregion
@@ -238,35 +274,37 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                                 USER.Findbykey(user.getUid(), Data -> {
                                     Data.email = memail.getText().toString();
                                     Data.Update(Data.Key);
-                                    Toast.makeText(getContext(),
+                                    Toast.makeText(context,
                                             "Email Changed Successfully",
                                             Toast.LENGTH_LONG).show();
                                     Edialog.dismiss();
                                 });
                             }else
-                                Toast.makeText(getContext(),
+                                Toast.makeText(context,
                                         task.getException().getMessage(),
                                         Toast.LENGTH_LONG).show();
                         });
 
 
                     } else
-                        Toast.makeText(getContext(),
+                        Toast.makeText(context,
                                 "Email Not Matched",
                                 Toast.LENGTH_LONG).show();
                 } else
-                    Toast.makeText(getContext(),
+                    Toast.makeText(context,
                             "Email Field is Empty",
                             Toast.LENGTH_LONG).show();
                 //endregion
                 break;
             case R.id.Browsebutton:
                 //region Browse Button
-                Intent i = new Intent(
-                        Intent.ACTION_PICK,
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
-                startActivityForResult(i, RESULT_LOAD_IMAGE);
+                if (CropImage.isExplicitCameraPermissionRequired(context) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    WAITINGFORIMAGE = true;
+                    requestPermissions(new String[]{android.Manifest.permission.CAMERA}, CropImage.CAMERA_CAPTURE_PERMISSIONS_REQUEST_CODE);
+                } else {
+                    WAITINGFORIMAGE = true;
+                    CropImage.startPickImageActivity(activity);
+                }
                 //endregion
                 break;
 

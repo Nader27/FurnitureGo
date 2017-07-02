@@ -12,5 +12,6 @@
         android:id="@+id/splash"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/logo_image"
         android:src="@drawable/furniturego_logo" />
 </LinearLayout>
