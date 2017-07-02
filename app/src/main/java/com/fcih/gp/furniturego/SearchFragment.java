@@ -64,7 +64,7 @@ public class SearchFragment extends Fragment {
         progressDialog.setTitle("Searching");
         progressDialog.setMessage("Searching For " + query);
         progressDialog.show();
-        Query que = FireBaseHelper.Objects.Ref.orderByChild(FireBaseHelper.Objects.Table.Name.text).startAt(this.query).endAt(this.query + "\uf8ff");
+        Query que = FireBaseHelper.Objects.Ref.orderByChild(FireBaseHelper.Objects.Table.Name.text).startAt(this.query);
         new FireBaseHelper.Objects().Where(que, Data -> {
             if (Data.size() == 0) {
                 progressDialog.dismiss();
