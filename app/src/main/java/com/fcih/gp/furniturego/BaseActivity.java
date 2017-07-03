@@ -167,7 +167,7 @@ public class BaseActivity extends AppCompatActivity
 
         if (user != null) {
 
-            if (!user.getPhotoUrl().toString().isEmpty()) {
+            if (user.getPhotoUrl() != null) {
                 Picasso.with(getApplicationContext())
                         .load(user.getPhotoUrl())
                         .resize(userimage.getWidth(), userimage.getWidth())

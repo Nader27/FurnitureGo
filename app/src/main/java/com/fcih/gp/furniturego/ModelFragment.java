@@ -140,7 +140,7 @@ public class ModelFragment extends Fragment {
                 }
                 if (activity.findViewById(R.id.Textpresentage) != null) {
                     TextView textView = (TextView) activity.findViewById(R.id.Textpresentage);
-                    int presentage = (int) ((taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount()) * 100);
+                    int presentage = (int) (taskSnapshot.getBytesTransferred() * 100 / taskSnapshot.getTotalByteCount());
                     textView.setText(presentage + "%");
                 }
                 if (activity.findViewById(R.id.downloadprogressBar) != null) {
@@ -283,13 +283,14 @@ public class ModelFragment extends Fragment {
     }
 
     private void InitializeUserFeedback() {
-        Ion.with(context)
-                .load(mAuth.getCurrentUser().getPhotoUrl().toString())
-                .withBitmap()
-                .fitXY()
-                .intoImageView(FeedUser);
-        mAddFeedback.setEnabled(false);
-
+        if (mAuth.getCurrentUser().getPhotoUrl() != null) {
+            Ion.with(context)
+                    .load(mAuth.getCurrentUser().getPhotoUrl().toString())
+                    .withBitmap()
+                    .fitXY()
+                    .intoImageView(FeedUser);
+            mAddFeedback.setEnabled(false);
+        }
         FeedbackText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -380,10 +381,12 @@ public class ModelFragment extends Fragment {
                 });
                 fab.setOnClickListener(v -> {
                     task.cancel();
+                    Delete(Data.Key, context);
                     Refresh();
                 });
                 mdownloadbutton.setOnClickListener(v -> {
                     task.cancel();
+                    Delete(Data.Key, context);
                     Refresh();
                 });
             } else {
@@ -413,10 +416,12 @@ public class ModelFragment extends Fragment {
                 });
                 fab.setOnClickListener(vv -> {
                     task.cancel();
+                    Delete(Data.Key, context);
                     Refresh();
                 });
                 mdownloadbutton.setOnClickListener(vv -> {
                     task.cancel();
+                    Delete(Data.Key, context);
                     Refresh();
                 });
             });
