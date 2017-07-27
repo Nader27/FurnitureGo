@@ -69,6 +69,7 @@ public class ModelFragment extends Fragment {
     private Button mdownloadbutton;
     private Button mAddFeedback;
     private TextView mNameView;
+    private TextView mDescriptionView;
     private TextView mCompanyView;
     private TextView mSizeView;
     private ImageView mimageView;
@@ -252,6 +253,7 @@ public class ModelFragment extends Fragment {
         mDownloading = (LinearLayout) view.findViewById(R.id.Downloading);
         mdownloadbutton = (Button) view.findViewById(R.id.Download);
         mNameView = (TextView) view.findViewById(R.id.Name_TextView);
+        mDescriptionView = (TextView) view.findViewById(R.id.model_description);
         mCompanyView = (TextView) view.findViewById(R.id.Company_TextView);
         mSizeView = (TextView) view.findViewById(R.id.Size_TextView);
         mimageView = (ImageView) view.findViewById(R.id.model_imageView);
@@ -351,6 +353,7 @@ public class ModelFragment extends Fragment {
 
         mCompanyView.setText(Data.companies.name);
         mNameView.setText(Data.name);
+        mDescriptionView.setText(Data.description+"\n Post Date: "+Data.date+"\n About Company: "+Data.companies.about+"\n Price : "+Data.price);
         mTitleBarView.setTitle(Data.name);
         mTitleBarView.setExpandedTitleColor(getResources().getColor(R.color.colorPrimary));
         modelRef.getMetadata().addOnCompleteListener(task -> {
