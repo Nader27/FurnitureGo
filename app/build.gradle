@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.0'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.fcih.gp.furniturego"
         minSdkVersion 17
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -30,18 +30,19 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testImplementation 'junit:junit:4.12'
-    implementation 'com.android.support:design:25.4.0'
-    implementation 'com.android.support:exifinterface:25.4.0'
-    implementation 'com.android.support:appcompat-v7:25.4.0'
-    implementation 'com.android.support:customtabs:25.4.0'
-    implementation 'com.android.support:support-v4:25.4.0'
-    implementation 'com.android.support:recyclerview-v7:25.4.0'
-    implementation 'com.android.support:cardview-v7:25.4.0'
-    implementation 'com.google.firebase:firebase-database:11.0.1'
-    implementation 'com.google.firebase:firebase-auth:11.0.1'
-    implementation 'com.google.firebase:firebase-storage:11.0.1'
+    implementation 'com.android.support:animated-vector-drawable:26.1.0'
+    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.android.support:exifinterface:26.1.0'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:customtabs:26.1.0'
+    implementation 'com.android.support:support-v4:26.1.0'
+    implementation 'com.android.support:recyclerview-v7:26.1.0'
+    implementation 'com.android.support:cardview-v7:26.1.0'
+    implementation 'com.google.firebase:firebase-database:12.0.0'
+    implementation 'com.google.firebase:firebase-auth:12.0.0'
+    implementation 'com.google.firebase:firebase-storage:12.0.0'
     implementation 'com.firebaseui:firebase-ui-database:2.0.1'
-    implementation 'com.google.android.gms:play-services-auth:11.0.1'
+    implementation 'com.google.android.gms:play-services-auth:12.0.0'
     implementation 'com.facebook.android:facebook-android-sdk:4.23.0'
     implementation 'com.twitter.sdk.android:twitter:3.0.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
