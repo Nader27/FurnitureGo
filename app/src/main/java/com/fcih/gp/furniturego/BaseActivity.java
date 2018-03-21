@@ -52,8 +52,8 @@ public class BaseActivity extends AppCompatActivity
         MissingDeviceFeatures missingDeviceFeatures = ArchitectView.isDeviceSupported(this,
                 ArchitectStartupConfiguration.Features.ImageTracking | ArchitectStartupConfiguration.Features.InstantTracking);
 
-        //if (false) {
-        if (missingDeviceFeatures.areFeaturesMissing()) {
+        if (false) {
+            //if (missingDeviceFeatures.areFeaturesMissing()) {
             AlertDialog alertDialog = new AlertDialog.Builder(this).create();
             alertDialog.setTitle("Sorry");
             alertDialog.setMessage("Sorry Your Device Is Not Supported." + missingDeviceFeatures.getMissingFeatureMessage());
@@ -83,15 +83,15 @@ public class BaseActivity extends AppCompatActivity
                     }
 
                 };
-                Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+                Toolbar toolbar = findViewById(R.id.toolbar);
                 setSupportActionBar(toolbar);
-                drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer = findViewById(R.id.drawer_layout);
                 toggle = new ActionBarDrawerToggle(
                         this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
                 drawer.setDrawerListener(toggle);
                 toggle.syncState();
 
-                navigationView = (NavigationView) findViewById(R.id.nav_view);
+                navigationView = findViewById(R.id.nav_view);
                 navigationView.setNavigationItemSelectedListener(this);
                 onNavigationItemSelected(navigationView.getMenu().getItem(0));
             }
@@ -161,9 +161,9 @@ public class BaseActivity extends AppCompatActivity
 
     public void UserSetup() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        ImageView userimage = (ImageView) findViewById(R.id.nav_user_image);
-        TextView username = (TextView) findViewById(R.id.nav_user_name);
-        TextView useremail = (TextView) findViewById(R.id.nav_user_email);
+        ImageView userimage = findViewById(R.id.nav_user_image);
+        TextView username = findViewById(R.id.nav_user_name);
+        TextView useremail = findViewById(R.id.nav_user_email);
 
         if (user != null) {
 
@@ -182,7 +182,7 @@ public class BaseActivity extends AppCompatActivity
         MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        final ImageView mCloseButton = (ImageView) searchView.findViewById(android.support.v7.appcompat.R.id.search_close_btn);
+        final ImageView mCloseButton = searchView.findViewById(android.support.v7.appcompat.R.id.search_close_btn);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(
                 new ComponentName(this, BaseActivity.class)
         ));
@@ -272,7 +272,7 @@ public class BaseActivity extends AppCompatActivity
         }
         item.setChecked(true);
         setTitle(item.getTitle());
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
