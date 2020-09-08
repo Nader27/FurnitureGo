@@ -6,7 +6,7 @@
     android:background="@color/common_google_signin_btn_text_dark_disabled"
     tools:context=".HomeFragment">
 
-    <android.support.v4.view.ViewPager
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

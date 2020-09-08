@@ -8,8 +8,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +16,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -29,7 +28,8 @@ import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
-import java.io.File;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -90,7 +90,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         mEmailview.setEnabled(false);
         TextView mPasswordview = (TextView) mview.findViewById(R.id.passwordedit);
         mPasswordview.setEnabled(false);
-        Picasso.with(context)
+        Picasso.get()
                 .load(mAuth.getCurrentUser().getPhotoUrl())
                 .fit()
                 .into(imageView);
@@ -136,7 +136,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == CropImage.CAMERA_CAPTURE_PERMISSIONS_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 CropImage.activity(imageUri).setCropShape(CropImageView.CropShape.RECTANGLE).setFixAspectRatio(true)
@@ -166,15 +166,23 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             case R.id.savetext:
                 //region Save
                 if (ImageURI != null) {
-                    Uri file = Uri.fromFile(new File(ImageURI.toString()));
-                    StorageReference riversRef = storageRef.child("ProfileImage/" + file.getLastPathSegment());
-                    UploadTask uploadTask = riversRef.putFile(file);
-                    uploadTask.addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show());
-                    uploadTask.addOnCompleteListener(task -> {
+                    //Uri file = Uri.fromFile(new File(ImageURI.toString()));
+                    StorageReference riversRef = storageRef.child("ProfileImage/" + ImageURI.getLastPathSegment());
+                    UploadTask uploadTask = riversRef.putFile(ImageURI);
+                    Task<Uri> urlTask = uploadTask.continueWithTask(task -> {
+                                if (!task.isSuccessful()) {
+                                    Toast.makeText(context, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                }
+
+                                // Continue with the task to get the download URL
+                                return riversRef.getDownloadUrl();
+                            }
+
+                    ).addOnCompleteListener(task -> {
                         try {
 
                             if (task.isSuccessful()) {
-                                @SuppressWarnings("VisibleForTests") final Uri downloadUrl = task.getResult().getDownloadUrl();
+                                @SuppressWarnings("VisibleForTests") final Uri downloadUrl = task.getResult();
                                 UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                         .setDisplayName(mNameview.getText().toString())
                                         .setPhotoUri(downloadUrl)
@@ -196,6 +204,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                         Toast.makeText(context,task.getException().getMessage(),Toast.LENGTH_LONG).show();
                     }*/
                     });
+                    uploadTask.addOnFailureListener(e -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show());
                 } else {
                     UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                             .setDisplayName(mNameview.getText().toString())

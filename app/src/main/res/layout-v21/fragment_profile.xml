@@ -1,76 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     tools:context=".ProfileFragment">
-
-    <android.support.v7.widget.ActionBarContainer
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#000000">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <ImageView
-                    android:id="@+id/backimg"
-                    android:layout_width="50dp"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="20dp"
-                    android:contentDescription="@string/back_icon"
-                    android:tint="@color/white"
-                    app:srcCompat="@drawable/ic_arrow_back" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="bottom"
-                    android:text="@string/profile_personal_info"
-                    android:textColor="@color/white"
-                    android:textSize="20sp" />
-
-                <TextView
-                    android:id="@+id/savetext"
-                    android:layout_width="50dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="end"
-                    android:layout_marginRight="20dp"
-                    android:text="@string/profile_save"
-                    android:textColor="@color/white"
-                    android:textSize="20sp" />
-            </android.support.v7.widget.Toolbar>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <com.makeramen.roundedimageview.RoundedImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/userimage"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:scaleType="fitStart"
-                    app:riv_border_color="#333333"
-                    app:riv_border_width="1dip"
-                    app:riv_corner_radius="35dip"
-                    app:riv_mutate_background="true"
-                    app:riv_oval="true"
-                    app:riv_tile_mode="clamp" />
-            </LinearLayout>
-        </LinearLayout>
-
-    </android.support.v7.widget.ActionBarContainer>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -81,7 +16,7 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
             android:layout_weight="25"
             android:padding="15dp"
             android:text="@string/full_name"
@@ -99,11 +34,6 @@
             android:textSize="14sp" />
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.1dp"
-        android:background="#ACACAC" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -113,7 +43,7 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
             android:layout_weight="25"
             android:inputType="none"
             android:padding="15dp"
@@ -125,7 +55,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="50"
-            android:editable="false"
             android:hint="@string/email_placeholder"
             android:inputType="none|textEmailAddress"
             android:padding="16dp"
@@ -154,7 +83,7 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
             android:layout_weight="25"
             android:padding="15dp"
             android:text="@string/password"
@@ -165,7 +94,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="50"
-            android:editable="false"
             android:hint="@string/password_placeholder"
             android:inputType="none|textPassword"
             android:padding="15dp"
@@ -194,7 +122,7 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
             android:layout_weight="25"
             android:padding="15dp"
             android:text="@string/picture"
@@ -213,5 +141,76 @@
         android:layout_width="match_parent"
         android:layout_height="0.1dp"
         android:background="#ACACAC" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="#ACACAC" />
+
+    <androidx.appcompat.widget.ActionBarContainer
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#000000">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <com.makeramen.roundedimageview.RoundedImageView
+                    android:id="@+id/userimage"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:scaleType="fitStart"
+                    app:riv_border_color="#333333"
+                    app:riv_border_width="1dip"
+                    app:riv_corner_radius="35dip"
+                    app:riv_mutate_background="true"
+                    app:riv_oval="true"
+                    app:riv_tile_mode="clamp" />
+            </LinearLayout>
+
+            <Toolbar
+                android:id="@+id/toolbar2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/backimg"
+                    android:layout_width="50dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="20dp"
+                    android:contentDescription="@string/back_icon"
+                    app:srcCompat="@drawable/ic_arrow_back"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="bottom"
+                    android:text="@string/profile_personal_info"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/savetext"
+                    android:layout_width="50dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="20dp"
+                    android:text="@string/profile_save"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+            </Toolbar>
+        </LinearLayout>
+
+    </androidx.appcompat.widget.ActionBarContainer>
 
 </LinearLayout>

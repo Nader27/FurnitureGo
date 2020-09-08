@@ -7,16 +7,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
@@ -34,6 +25,16 @@ import com.wikitude.common.permission.PermissionManager;
 import com.wikitude.tools.device.features.MissingDeviceFeatures;
 
 import java.util.Arrays;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.core.view.MenuItemCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 public class BaseActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -88,7 +89,7 @@ public class BaseActivity extends AppCompatActivity
                 drawer = findViewById(R.id.drawer_layout);
                 toggle = new ActionBarDrawerToggle(
                         this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-                drawer.setDrawerListener(toggle);
+                drawer.addDrawerListener(toggle);
                 toggle.syncState();
 
                 navigationView = findViewById(R.id.nav_view);
@@ -168,7 +169,7 @@ public class BaseActivity extends AppCompatActivity
         if (user != null) {
 
             if (user.getPhotoUrl() != null) {
-                Picasso.with(getApplicationContext())
+                Picasso.get()
                         .load(user.getPhotoUrl())
                         .resize(userimage.getWidth(), userimage.getWidth())
                         .into(userimage);
@@ -182,7 +183,7 @@ public class BaseActivity extends AppCompatActivity
         MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        final ImageView mCloseButton = searchView.findViewById(android.support.v7.appcompat.R.id.search_close_btn);
+        final ImageView mCloseButton = searchView.findViewById(androidx.appcompat.R.id.search_close_btn);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(
                 new ComponentName(this, BaseActivity.class)
         ));

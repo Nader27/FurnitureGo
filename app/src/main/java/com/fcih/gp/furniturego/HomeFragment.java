@@ -1,18 +1,20 @@
 package com.fcih.gp.furniturego;
 
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.google.android.material.tabs.TabLayout;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 public class HomeFragment extends Fragment {
 
@@ -43,7 +45,7 @@ public class HomeFragment extends Fragment {
         activity = (BaseActivity) getActivity();
         activity.findViewById(R.id.tabs).setVisibility(View.VISIBLE);
         activity.getSupportActionBar().show();
-        mProgressView = (ProgressBar) activity.findViewById(R.id.progress);
+        mProgressView = activity.findViewById(R.id.progress);
         mContainer = container;
         showProgress(true);
         new FireBaseHelper.Categories().Tolist(Data -> {

@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -29,12 +27,14 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -52,6 +52,9 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 /**
  * A login screen that offers login via email/password.
  */
@@ -60,7 +63,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private static final String TAG = "Login Activity";
     private static final int RC_SIGN_IN = 9001;
     private static final String DESIGNER_TYPE = "Designer";
-    private static final String DEAFULT_IMAGE = "https://firebasestorage.googleapis.com/v0/b/furniture-go.appspot.com/o/ProfileImage%2Fdeafult.png?alt=media&token=d2ce2ee2-ed54-4426-8bf2-13cb19d59d4c";
+    private static final String DEAFULT_IMAGE = "https://firebasestorage.googleapis.com/v0/b/furniture-go-800ec.appspot.com/o/ProfileImage%2Fdefault.png?alt=media&token=b2f50aef-0346-40ce-8b56-39cd45a24841";
     // UI references.
     private ProgressBar mProgressView;
     private LinearLayout mContainerView;
@@ -84,7 +87,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private CallbackManager callbackManager;
     private LoginButton facebookbtn;
     //Google
-    private GoogleApiClient mGoogleApiClient;
+    private GoogleSignInClient mGoogleSignInClient;
     //Twitter
     private TwitterLoginButton twitterbtn;
     //FireBase
@@ -252,7 +255,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 facebookbtn.performClick();
                 break;
             case R.id.google:
-                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+
+                Intent signInIntent = mGoogleSignInClient.getSignInIntent();
                 showProgress(true);
                 startActivityForResult(signInIntent, RC_SIGN_IN);
                 break;
@@ -277,15 +281,21 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         //Google
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            if (result.isSuccess()) {
-                // Google Sign In was successful, authenticate with Firebase
-                GoogleSignInAccount account = result.getSignInAccount();
-                handleResult(account);
+            Task<GoogleSignInAccount> result = GoogleSignIn.getSignedInAccountFromIntent(data);
+            if (result.isComplete()) {
+                try {
+                    // Google Sign In was successful, authenticate with Firebase
+                    GoogleSignInAccount account = result.getResult(ApiException.class);
+                    handleResult(account);
+                } catch (ApiException e) {
+                    Log.d(TAG, "Error Google Signin ");
+                    showProgress(false);
+                    Toast.makeText(LoginActivity.this, result.getException().getMessage(), Toast.LENGTH_LONG).show();
+                }
             } else {
                 Log.d(TAG, "Error Google Signin ");
                 showProgress(false);
-                Toast.makeText(LoginActivity.this, result.getStatus().getStatusMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(LoginActivity.this, result.getException().getMessage(), Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -305,14 +315,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 .build();
         // Build a GoogleApiClient with access to the Google Sign-In API and the
         // options specified by gso.
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
+        // Build a GoogleSignInClient with the options specified by gso.
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
     private void FacebookLogin(LoginButton fbLoginButton) {
-        fbLoginButton.setReadPermissions("email", "public_profile");
+        fbLoginButton.setPermissions("email", "public_profile");
         fbLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {

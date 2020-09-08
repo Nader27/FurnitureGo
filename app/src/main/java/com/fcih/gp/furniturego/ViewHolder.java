@@ -2,8 +2,6 @@ package com.fcih.gp.furniturego;
 
 import android.content.Context;
 import android.os.Environment;
-import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.RecyclerView;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ImageButton;
@@ -16,6 +14,9 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.util.List;
 import java.util.Locale;
+
+import androidx.appcompat.widget.PopupMenu;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class ViewHolder extends RecyclerView.ViewHolder {
     public final View mView;
@@ -63,7 +64,7 @@ public class ViewHolder extends RecyclerView.ViewHolder {
         mTitleView.setText(Data.name);
         mCompanyView.setText(Data.companies.name);
         mRateView.setText(getRate(Data.feedbacks));
-        Picasso.with(mContext).load(Data.image_path).into(mImageView);
+        Picasso.get().load(Data.image_path).into(mImageView);
         new FireBaseHelper.Favorites().Findbykey(Data.Key + mAuth.getCurrentUser().getUid(), Data1 -> {
             if (Data1 != null) {
                 mPopupMenu.getMenu().findItem(R.id.item_Whishlist).setVisible(false);

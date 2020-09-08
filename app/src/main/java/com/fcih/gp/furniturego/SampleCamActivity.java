@@ -7,8 +7,6 @@ import android.graphics.Bitmap;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -24,9 +22,12 @@ import org.json.JSONException;
 import java.io.File;
 import java.io.FileOutputStream;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 public class SampleCamActivity extends AbstractArchitectCamActivity {
 
-	private static final String TAG = "SampleCamActivity";
+    private static final String TAG = "SampleCamActivity";
     private static final int WIKITUDE_PERMISSIONS_REQUEST_EXTERNAL_STORAGE = 3;
     protected Bitmap screenCapture = null;
     /**

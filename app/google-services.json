@@ -1,64 +1,45 @@
 {
   "project_info": {
-    "project_number": "150285431568",
-    "firebase_url": "https://furniture-go.firebaseio.com",
-    "project_id": "furniture-go",
-    "storage_bucket": "furniture-go.appspot.com"
+    "project_number": "356041923807",
+    "firebase_url": "https://furniture-go-800ec.firebaseio.com",
+    "project_id": "furniture-go-800ec",
+    "storage_bucket": "furniture-go-800ec.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:150285431568:android:7ebeb916274bb277",
+        "mobilesdk_app_id": "1:356041923807:android:c26bf75e8585b33aed5d6a",
         "android_client_info": {
           "package_name": "com.fcih.gp.furniturego"
         }
       },
       "oauth_client": [
         {
-          "client_id": "150285431568-trkgel8b6ntant46pie1ecumg06v2i93.apps.googleusercontent.com",
+          "client_id": "356041923807-eoh0i2sj5omrlc5utq0kobhmu1idjhbe.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.fcih.gp.furniturego",
-            "certificate_hash": "45353cd987aa04fd6c34a0239d2d1f00ece56a6c"
+            "certificate_hash": "70461e0bdb24d36001a42317f4ede493ed3d6a1f"
           }
         },
         {
-          "client_id": "150285431568-30koosj69d3rh889ovejc5prn5gqg1ur.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.fcih.gp.furniturego",
-            "certificate_hash": "dd25293dfa799e7fca7b22a2553a88f0213fe79f"
-          }
-        },
-        {
-          "client_id": "150285431568-grqkt0amhvvak1c0ighgs3ptp3smuju6.apps.googleusercontent.com",
-          "client_type": 3
-        },
-        {
-          "client_id": "150285431568-2q9lr94k0hivblco76qt4ihgajevs8p1.apps.googleusercontent.com",
+          "client_id": "356041923807-l3khd0c6umh5djanv6tvst7m18edbnhr.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyC7pjFLpGViyJUoinmagjXBKXz1mgKZ_KU"
+          "current_key": "AIzaSyAJ5dfy96Zp3qGMeTMAS-w43LQTGpDxthk"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "150285431568-grqkt0amhvvak1c0ighgs3ptp3smuju6.apps.googleusercontent.com",
+              "client_id": "356041923807-l3khd0c6umh5djanv6tvst7m18edbnhr.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
-        },
-        "ads_service": {
-          "status": 2
         }
       }
     }

@@ -16,7 +16,6 @@
         android:id="@+id/nav_user_image"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:layout_gravity="start"
         android:layout_weight="20"
         app:riv_corner_radius="35dip"
         app:riv_mutate_background="true"

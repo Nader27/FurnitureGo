@@ -25,3 +25,4 @@
 #-renamesourcefileattribute SourceFile
 -keepattributes Signature
 -keepattributes *Annotation*
+-keep class androidx.appcompat.widget.* { *; }
